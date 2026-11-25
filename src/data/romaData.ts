@@ -24,32 +24,81 @@ export const hours = {
   delivery: "Retiro por Montevideo 712 y envíos en Córdoba, a coordinar por WhatsApp.",
 };
 
-export type Item = { name: string; description: string; pricePerUnit: number | null };
-export type Group = { title: string; items: Item[] };
+export type MigaItem = { name: string; price: number };
+export type MigaGroup = { category: string; items: MigaItem[] };
 
-export const presentations = [
-  { label: "Unidad", qty: 1 },
-  { label: "6 unidades", qty: 6 },
-  { label: "12 unidades", qty: 12 },
-  { label: "24 unidades", qty: 24 },
+export const migaPresentations = [
+  { label: "1 combo (3 unidades)", shortLabel: "1 combo (3 uni)", combos: 1 },
+  { label: "2 combos (6 unidades)", shortLabel: "2 combos (6 uni)", combos: 2 },
+  { label: "4 combos (12 unidades)", shortLabel: "4 combos (12 uni)", combos: 4 },
+  { label: "8 combos (24 unidades)", shortLabel: "8 combos (24 uni)", combos: 8 },
+] as const;
+
+export const migaNote = "Presentación en combos de 3 unidades según variedad base y combinaciones.";
+
+const miga12 = (
+  base: string,
+  classic: number,
+  mid: number,
+  gourmet: number,
+  quesoRucula: number,
+  cereza: number,
+): MigaItem[] => [
+  { name: `${base} y Queso`, price: classic },
+  { name: `${base} y Verduras`, price: classic },
+  { name: `${base} y Pickles`, price: classic },
+  { name: `${base} y Choclo`, price: mid },
+  { name: `${base}, Morrones, Huevo y Aceituna`, price: gourmet },
+  { name: `${base} y Ananá`, price: mid },
+  { name: `${base} y Palmito con Salsa Golf`, price: mid },
+  { name: `${base}, Rúcula, Huevo y Tomate`, price: gourmet },
+  { name: `${base}, Queso y Rúcula`, price: quesoRucula },
+  { name: `${base}, Ananá y Cereza`, price: cereza },
+  { name: `${base} y Roquefort`, price: mid },
+  { name: `${base} y Champiñón`, price: mid },
 ];
 
-// Los sabores son de ejemplo: reemplazalos por la carta real.
-export const miga: Group[] = [
-  { title: "Clásicos", items: [
-    { name: "Jamón y queso", description: "El de siempre, en pan de miga fresco.", pricePerUnit: null },
-    { name: "Tomate y queso", description: "Fresco y liviano.", pricePerUnit: null },
-    { name: "Huevo y lechuga", description: "Cremoso, con crocancia.", pricePerUnit: null },
-  ]},
-  { title: "Especiales", items: [
-    { name: "Jamón crudo y rúcula", description: "Con queso cremoso.", pricePerUnit: null },
-    { name: "Pollo y verdeo", description: "Relleno casero.", pricePerUnit: null },
-    { name: "Roquefort y nuez", description: "Para los que buscan algo distinto.", pricePerUnit: null },
-  ]},
-  { title: "Tostados", items: [
-    { name: "Tostado de jamón y queso", description: "Calentito, de pan lactal.", pricePerUnit: null },
-    { name: "Tostado completo", description: "Jamón, queso, tomate y huevo.", pricePerUnit: null },
-  ]},
+export const migaGroups: MigaGroup[] = [
+  { category: "Jamón Cocido", items: miga12("Jamón Cocido", 7200, 9700, 10700, 10700, 12300) },
+  { category: "Paleta", items: miga12("Paleta", 6200, 8700, 10700, 9700, 11700) },
+  { category: "Salame", items: miga12("Salame", 7200, 9700, 10700, 10700, 12300) },
+  { category: "Ternera", items: miga12("Ternera", 11200, 13700, 14700, 14700, 16200) },
+  { category: "Pollo", items: miga12("Pollo", 11200, 13700, 14700, 14700, 16200) },
+  { category: "Bondiola", items: miga12("Bondiola", 11200, 13700, 14700, 14700, 16200) },
+  { category: "Jamón Crudo", items: miga12("Jamón Crudo", 11200, 13700, 14700, 14700, 16200) },
+  { category: "Lomo Horneado", items: miga12("Lomo Horneado", 11200, 13700, 14700, 14700, 16200) },
+  {
+    category: "Vegetarianos",
+    items: [
+      { name: "Doble Queso", price: 7700 },
+      { name: "Queso y Verduras", price: 7200 },
+      { name: "Queso y Pickles", price: 7200 },
+      { name: "Queso y Choclo", price: 9700 },
+      { name: "Queso, Morrones, Huevo y Aceituna", price: 10700 },
+      { name: "Queso, Rúcula, Huevo y Tomate", price: 10700 },
+      { name: "Queso y Ananá", price: 9700 },
+      { name: "Queso, Ananá y Cereza", price: 12200 },
+      { name: "Queso y Roquefort", price: 9700 },
+      { name: "Queso Roquefort y una Verdura a elección", price: 10700 },
+    ],
+  },
+  {
+    category: "Atún",
+    items: [
+      { name: "Atún y Queso", price: 11200 },
+      { name: "Atún y Verduras", price: 11200 },
+      { name: "Atún y Pickles", price: 11200 },
+      { name: "Atún, Pickles y dos Verduras a elección", price: 12200 },
+      { name: "Atún, Morrones, Huevo y Aceituna", price: 14700 },
+      { name: "Queso, Rúcula, Huevo y Tomate (Línea Atún)", price: 14700 },
+    ],
+  },
+];
+
+export const migaExtras: ExtraOption[] = [
+  { id: "extra-queso", label: "Sumale Extra Queso", shortLabel: "Extra Queso", price: 1500 },
+  { id: "verdura", label: "Sumale una Verdura", shortLabel: "Una Verdura", price: 1500 },
+  { id: "agregado", label: "Sumale un Agregado", shortLabel: "Agregado", price: 3000 },
 ];
 
 export type Plan = { name: string; serves: string; detail: string; price: number | null };

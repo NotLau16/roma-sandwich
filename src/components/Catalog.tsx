@@ -9,23 +9,37 @@ import {
   gourmetVeggies,
   gourmetItems,
   gourmetExtras,
-  miga,
+  migaPresentations,
+  migaNote,
+  migaGroups,
+  migaExtras,
   picadas,
   tortas,
-  presentations,
   type Plan,
   type ExtraOption,
 } from "@/data/romaData";
 import { wa, money } from "@/lib/whatsapp";
 
 const tabs = [
+  "Sándwiches de miga",
   "Sándwiches Tradicionales",
   "Línea Gourmet",
-  "Sándwiches de miga",
   "Picadas",
   "Tortas saladas",
 ] as const;
 type Tab = (typeof tabs)[number];
+
+type DisplayGroup = {
+  category: string;
+  badge: string;
+  items: {
+    name: string;
+    finalPrice: number;
+    actionLabel: string;
+    waMessage: string;
+    baseNote?: string;
+  }[];
+};
 
 const btn =
   "inline-flex items-center rounded-full border border-forest px-4 py-2 text-sm font-medium text-forest transition hover:bg-forest hover:text-cream";
@@ -33,6 +47,11 @@ const btn =
 const pill = (active: boolean) =>
   `rounded-full px-4 py-1.5 text-sm transition ${
     active ? "bg-olive text-cream" : "ring-1 ring-olive/40 text-olive hover:bg-olive/10"
+  }`;
+
+const filterChip = (active: boolean) =>
+  `rounded-full px-3.5 py-1 text-xs font-medium transition sm:text-sm ${
+    active ? "bg-forest text-cream" : "bg-cream text-forest ring-1 ring-olive/30 hover:ring-forest"
   }`;
 
 const toggleInList = (list: string[], value: string) =>
@@ -46,22 +65,92 @@ const formatExtrasSuffix = (extras: ExtraOption[], selectedIds: string[]) => {
   return chosen.length ? ` + ${chosen.join(" + ")}` : "";
 };
 
+function CategoryFilterBar({
+  categories,
+  active,
+  onSelect,
+}: {
+  categories: string[];
+  active: string;
+  onSelect: (category: string) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-sm font-medium text-ink-soft">Categoría:</span>
+      {categories.map((cat) => (
+        <button
+          key={cat}
+          type="button"
+          onClick={() => onSelect(cat)}
+          aria-pressed={active === cat}
+          className={filterChip(active === cat)}
+        >
+          {cat}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function CategoryGrid({ groups }: { groups: DisplayGroup[] }) {
+  return (
+    <div className="grid gap-6 md:grid-cols-2">
+      {groups.map((group) => (
+        <article
+          key={group.category}
+          className="rounded-2xl bg-cream p-5 ring-1 ring-olive/20 sm:p-6"
+        >
+          <div className="flex items-baseline justify-between gap-2 border-b border-olive/30 pb-2.5">
+            <h4 className="font-display text-2xl text-forest">{group.category}</h4>
+            <span className="text-xs font-medium text-olive">{group.badge}</span>
+          </div>
+          <ul className="divide-y divide-olive/15">
+            {group.items.map((item) => (
+              <li key={item.name} className="py-3.5">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="font-medium text-ink">{item.name}</span>
+                  <span className="whitespace-nowrap font-semibold text-olive">
+                    {money(item.finalPrice)}
+                  </span>
+                </div>
+                <div className="mt-1 flex items-center justify-between gap-2">
+                  <a
+                    className="text-sm text-forest underline underline-offset-4 hover:text-olive"
+                    href={wa(item.waMessage)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {item.actionLabel}
+                  </a>
+                  {item.baseNote && <span className="text-xs text-ink-soft">{item.baseNote}</span>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 function ExtrasBanner({
   title,
   extras,
   selectedIds,
   onToggle,
+  note = "Opcional: tocá para sumar a tu pedido por WhatsApp",
 }: {
   title: string;
   extras: ExtraOption[];
   selectedIds: string[];
   onToggle: (id: string) => void;
+  note?: string;
 }) {
   return (
     <div className="mt-8 rounded-2xl border-l-4 border-forest bg-cream p-5 ring-1 ring-olive/20">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h4 className="font-display text-lg font-semibold text-forest">{title}</h4>
-        <span className="text-xs text-ink-soft">Opcional: tocá para sumar a tu pedido por WhatsApp</span>
+        <span className="text-xs text-ink-soft">{note}</span>
       </div>
       <div className="mt-3 flex flex-wrap gap-2.5">
         {extras.map((extra) => {
@@ -90,6 +179,82 @@ function ExtrasBanner({
   );
 }
 
+function MigaCatalog() {
+  const [combos, setCombos] = useState<number>(migaPresentations[0].combos);
+  const [categoryFilter, setCategoryFilter] = useState<string>("Todas");
+  const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
+
+  const pres = migaPresentations.find((p) => p.combos === combos)!;
+  const categories = ["Todas", ...migaGroups.map((g) => g.category)];
+  const visibleGroups =
+    categoryFilter === "Todas"
+      ? migaGroups
+      : migaGroups.filter((g) => g.category === categoryFilter);
+
+  const extrasPerCombo = sumExtras(migaExtras, selectedExtras);
+  const extrasText = formatExtrasSuffix(migaExtras, selectedExtras);
+
+  const displayGroups: DisplayGroup[] = visibleGroups.map((group) => ({
+    category: group.category,
+    badge: pres.shortLabel,
+    items: group.items.map((item) => {
+      const finalPrice = (item.price + extrasPerCombo) * pres.combos;
+      return {
+        name: item.name,
+        finalPrice,
+        actionLabel: `Pedir ${pres.shortLabel}${extrasText}`,
+        waMessage: `Hola Roma Sandwich! Quiero pedir Sándwiches de Miga: ${item.name} — ${pres.label}${extrasText} (${money(finalPrice)}).`,
+        baseNote:
+          extrasPerCombo > 0 || pres.combos > 1 ? `${money(item.price)} c/3 uni` : undefined,
+      };
+    }),
+  }));
+
+  return (
+    <div>
+      <div className="mb-6">
+        <h3 className="font-display text-2xl font-semibold text-forest sm:text-3xl">
+          Sándwiches de Miga (Combos de 3 Unidades)
+        </h3>
+        <p className="mt-2 max-w-3xl text-ink-soft">{migaNote}</p>
+      </div>
+
+      <div className="mb-6 space-y-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <span className="text-sm font-medium text-ink-soft">Presentación:</span>
+          {migaPresentations.map((p) => (
+            <button
+              key={p.combos}
+              type="button"
+              onClick={() => setCombos(p.combos)}
+              aria-pressed={combos === p.combos}
+              className={pill(combos === p.combos)}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+
+        <CategoryFilterBar
+          categories={categories}
+          active={categoryFilter}
+          onSelect={setCategoryFilter}
+        />
+      </div>
+
+      <CategoryGrid groups={displayGroups} />
+
+      <ExtrasBanner
+        title="Adicionales para Sándwiches de Miga (3 Unidades)"
+        extras={migaExtras}
+        selectedIds={selectedExtras}
+        onToggle={(id) => setSelectedExtras((prev) => toggleInList(prev, id))}
+        note="Valor adicional por combo de 3 unidades (opcional para WhatsApp)"
+      />
+    </div>
+  );
+}
+
 function TraditionalCatalog() {
   const [bread, setBread] = useState<(typeof traditionalBreads)[number]["id"]>("Pan Francés");
   const [categoryFilter, setCategoryFilter] = useState<string>("Todas");
@@ -103,6 +268,22 @@ function TraditionalCatalog() {
 
   const extrasTotal = sumExtras(traditionalExtras, selectedExtras);
   const extrasText = formatExtrasSuffix(traditionalExtras, selectedExtras);
+
+  const displayGroups: DisplayGroup[] = visibleGroups.map((group) => ({
+    category: group.category,
+    badge: "Pan Francés / Pebete",
+    items: group.items.map((item) => {
+      const basePrice = bread === "Pan Francés" ? item.priceFrench : item.pricePebete;
+      const finalPrice = basePrice + extrasTotal;
+      return {
+        name: item.name,
+        finalPrice,
+        actionLabel: `Pedir en ${bread}${extrasText}`,
+        waMessage: `Hola Roma Sandwich! Quiero pedir un Sándwich Tradicional: ${item.name} en ${bread}${extrasText} (${money(finalPrice)}).`,
+        baseNote: extrasTotal > 0 ? `Base ${money(basePrice)}` : undefined,
+      };
+    }),
+  }));
 
   return (
     <div>
@@ -129,71 +310,14 @@ function TraditionalCatalog() {
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-medium text-ink-soft">Categoría:</span>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setCategoryFilter(cat)}
-              aria-pressed={categoryFilter === cat}
-              className={`rounded-full px-3.5 py-1 text-xs font-medium transition sm:text-sm ${
-                categoryFilter === cat
-                  ? "bg-forest text-cream"
-                  : "bg-cream text-forest ring-1 ring-olive/30 hover:ring-forest"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        <CategoryFilterBar
+          categories={categories}
+          active={categoryFilter}
+          onSelect={setCategoryFilter}
+        />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {visibleGroups.map((group) => (
-          <article
-            key={group.category}
-            className="rounded-2xl bg-cream p-5 ring-1 ring-olive/20 sm:p-6"
-          >
-            <div className="flex items-baseline justify-between gap-2 border-b border-olive/30 pb-2.5">
-              <h4 className="font-display text-2xl text-forest">{group.category}</h4>
-              <span className="text-xs font-medium text-olive">Pan Francés / Pebete</span>
-            </div>
-            <ul className="divide-y divide-olive/15">
-              {group.items.map((item) => {
-                const basePrice = bread === "Pan Francés" ? item.priceFrench : item.pricePebete;
-                const finalPrice = basePrice + extrasTotal;
-                const msg = `Hola Roma Sandwich! Quiero pedir un Sándwich Tradicional: ${item.name} en ${bread}${extrasText} (${money(finalPrice)}).`;
-
-                return (
-                  <li key={item.name} className="py-3.5">
-                    <div className="flex items-baseline justify-between gap-3">
-                      <span className="font-medium text-ink">{item.name}</span>
-                      <span className="whitespace-nowrap font-semibold text-olive">
-                        {money(finalPrice)}
-                      </span>
-                    </div>
-                    <div className="mt-1 flex items-center justify-between gap-2">
-                      <a
-                        className="text-sm text-forest underline underline-offset-4 hover:text-olive"
-                        href={wa(msg)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Pedir en {bread}
-                        {extrasText}
-                      </a>
-                      {extrasTotal > 0 && (
-                        <span className="text-xs text-ink-soft">Base {money(basePrice)}</span>
-                      )}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </article>
-        ))}
-      </div>
+      <CategoryGrid groups={displayGroups} />
 
       <ExtrasBanner
         title="Adicionales para Sándwiches Tradicionales"
@@ -262,11 +386,7 @@ function GourmetCatalog() {
                 type="button"
                 onClick={() => toggleVeggie(veggie)}
                 aria-pressed={active}
-                className={`rounded-full px-3.5 py-1 text-xs font-medium transition sm:text-sm ${
-                  active
-                    ? "bg-forest text-cream"
-                    : "bg-cream text-forest ring-1 ring-olive/30 hover:ring-forest"
-                }`}
+                className={filterChip(active)}
               >
                 {active ? `✓ ${veggie}` : veggie}
               </button>
@@ -328,58 +448,6 @@ function GourmetCatalog() {
   );
 }
 
-function MigaCatalog() {
-  const [qty, setQty] = useState(presentations[1].qty);
-  const pres = presentations.find((p) => p.qty === qty)!;
-
-  return (
-    <>
-      <div className="mb-6 flex flex-wrap items-center gap-3">
-        <span className="text-sm text-ink-soft">Presentación</span>
-        {presentations.map((p) => (
-          <button
-            key={p.qty}
-            type="button"
-            onClick={() => setQty(p.qty)}
-            aria-pressed={qty === p.qty}
-            className={pill(qty === p.qty)}
-          >
-            {p.label}
-          </button>
-        ))}
-      </div>
-      <div className="grid gap-8 md:grid-cols-3">
-        {miga.map((g) => (
-          <div key={g.title}>
-            <h3 className="border-b border-olive/30 pb-2 font-display text-2xl">{g.title}</h3>
-            <ul className="divide-y divide-olive/15">
-              {g.items.map((i) => (
-                <li key={i.name} className="py-4">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className="font-medium">{i.name}</span>
-                    <span className="whitespace-nowrap text-sm text-olive">
-                      {money(i.pricePerUnit === null ? null : i.pricePerUnit * pres.qty)}
-                    </span>
-                  </div>
-                  <p className="text-sm text-ink-soft">{i.description}</p>
-                  <a
-                    className="mt-1 inline-block text-sm text-forest underline underline-offset-4"
-                    href={wa(`Hola Roma Sandwich! Quiero pedir sándwiches de miga: ${i.name}, ${pres.label}.`)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Pedir {pres.label.toLowerCase()}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
 function Plans({ plans, kind }: { plans: Plan[]; kind: string }) {
   return (
     <div className="grid gap-4 md:grid-cols-3">
@@ -404,7 +472,7 @@ function Plans({ plans, kind }: { plans: Plan[]; kind: string }) {
 }
 
 export default function Catalog() {
-  const [tab, setTab] = useState<Tab>("Sándwiches Tradicionales");
+  const [tab, setTab] = useState<Tab>("Sándwiches de miga");
 
   return (
     <div>
@@ -428,9 +496,9 @@ export default function Catalog() {
       </div>
 
       <div className="mt-8" role="tabpanel">
+        {tab === "Sándwiches de miga" && <MigaCatalog />}
         {tab === "Sándwiches Tradicionales" && <TraditionalCatalog />}
         {tab === "Línea Gourmet" && <GourmetCatalog />}
-        {tab === "Sándwiches de miga" && <MigaCatalog />}
         {tab === "Picadas" && <Plans plans={picadas} kind="picadas" />}
         {tab === "Tortas saladas" && <Plans plans={tortas} kind="tortas saladas" />}
       </div>
