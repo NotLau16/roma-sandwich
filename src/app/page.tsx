@@ -58,7 +58,7 @@ export default function Home() {
               Sándwiches de miga artesanales, hechos hoy en Córdoba
             </h1>
             <p className="mt-5 max-w-prose text-lg leading-relaxed text-ink-soft">
-              Sándwiches tradicionales en pan francés o pebete, línea gourmet en ciabatta y focaccia, sándwiches de miga, picadas, tortas saladas y catering para tus eventos. Elaborados en nuestra fábrica de Montevideo 712, con productos de calidad y mucho amor.
+              Sándwiches de miga, tradicionales en pan francés o pebete, línea gourmet en ciabatta y focaccia, combos especiales, picadas, tortas saladas y catering para tus eventos. Elaborados en nuestra fábrica de Montevideo 712, con productos de calidad y mucho amor.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a className={cta} href={wa("Hola Roma Sandwich! Quiero hacer un pedido.")} target="_blank" rel="noopener noreferrer">Hacer pedido por WhatsApp</a>
@@ -79,7 +79,7 @@ export default function Home() {
           <div className={wrap}>
             <h2 className="font-display text-3xl font-semibold text-forest sm:text-4xl">Nuestros productos</h2>
             <p className="mb-8 mt-2 max-w-2xl text-ink-soft">
-              Elegí entre Sándwiches Tradicionales, Línea Gourmet en Ciabatta y Focaccia, Sándwiches de miga, Picadas y Tortas saladas.
+              Elegí entre Sándwiches de miga, Sándwiches Tradicionales, Línea Gourmet en Ciabatta y Focaccia, Combos Especiales, Picadas y Tortas saladas.
             </p>
             <Reveal><Catalog /></Reveal>
           </div>

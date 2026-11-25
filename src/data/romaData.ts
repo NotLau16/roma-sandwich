@@ -232,10 +232,59 @@ export const gourmetExtras: ExtraOption[] = [
   { id: "agregado-especial", label: "Sumale un Agregado Especial", shortLabel: "Agregado Especial", price: 2000 },
 ];
 
+export const combosNote =
+  "Opciones promocionales con bebida incluida para compartir o resolver el almuerzo y la merienda.";
+
+export const specialCombos: Plan[] = [
+  {
+    name: "Combo Clásico 1",
+    serves: "1 docena + Coca-Cola 1.5 L",
+    detail:
+      "1 docena de sándwiches de miga triangular de paleta y queso o paleta y verdura + Coca-Cola de 1.5 litros.",
+    price: 25500,
+  },
+  {
+    name: "Combo Clásico 2",
+    serves: "1 docena + Coca-Cola 1.5 L",
+    detail:
+      "1 docena de sándwiches de miga triangular de jamón cocido y queso o jamón cocido y verdura + Coca-Cola de 1.5 litros.",
+    price: 28500,
+  },
+  {
+    name: "Combo Familiar 1",
+    serves: "2 docenas + Coca-Cola 1.5 L",
+    detail:
+      "2 docenas de sándwiches de miga triangular de paleta y queso o paleta y verdura + Coca-Cola de 1.5 litros.",
+    price: 47000,
+  },
+  {
+    name: "Combo Familiar 2",
+    serves: "2 docenas + Coca-Cola 1.5 L",
+    detail:
+      "2 docenas de sándwiches de miga triangular de jamón cocido y queso o jamón cocido y verdura + Coca-Cola de 1.5 litros.",
+    price: 53000,
+  },
+  {
+    name: "Combo Break 1",
+    serves: "Individual + lata de Coca-Cola",
+    detail:
+      "Tortuguita o pebete de jamón cocido o salame con queso y dos verduras a elección + lata de Coca-Cola.",
+    price: 6200,
+  },
+  {
+    name: "Combo Break 2",
+    serves: "Individual + lata de Coca-Cola",
+    detail:
+      "Tortuguita o pebete de lomo horneado, bondiola, jamón crudo o ternera con queso y dos verduras a elección + lata de Coca-Cola.",
+    price: 7700,
+  },
+];
+
 export const cateringServices = [
   "Sándwiches de miga",
   "Sándwiches Tradicionales (Pan Francés / Pebete)",
   "Línea Gourmet (Pan Ciabatta / Focaccia)",
+  "Combos Especiales",
   "Picadas",
   "Tortas saladas",
   "Mesa salada completa",
@@ -244,7 +293,10 @@ export const cateringEvents = ["Cumpleaños", "Oficina o reunión", "Evento fami
 
 export const whyUs = [
   { title: "Elaboración artesanal y fresca", text: "Hacemos todo en nuestra fábrica, cada día." },
-  { title: "Variedad en un solo lugar", text: "Miga, tradicionales, ciabatta, focaccia, picadas, tortas saladas y catering." },
+  {
+    title: "Variedad en un solo lugar",
+    text: "Miga, tradicionales, ciabatta, focaccia, combos, picadas, tortas saladas y catering.",
+  },
   { title: "Atención directa por WhatsApp", text: "Hablás con quien arma tu pedido." },
   { title: "Retiro y envíos en Córdoba", text: "Pasá por Montevideo 712 o coordinamos la entrega." },
 ];

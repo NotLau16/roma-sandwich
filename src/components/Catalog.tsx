@@ -13,6 +13,8 @@ import {
   migaNote,
   migaGroups,
   migaExtras,
+  combosNote,
+  specialCombos,
   picadas,
   tortas,
   type Plan,
@@ -24,6 +26,7 @@ const tabs = [
   "Sándwiches de miga",
   "Sándwiches Tradicionales",
   "Línea Gourmet",
+  "Combos Especiales",
   "Picadas",
   "Tortas saladas",
 ] as const;
@@ -448,25 +451,60 @@ function GourmetCatalog() {
   );
 }
 
-function Plans({ plans, kind }: { plans: Plan[]; kind: string }) {
+function Plans({
+  plans,
+  kind,
+  cols = 3,
+}: {
+  plans: Plan[];
+  kind: string;
+  cols?: 2 | 3;
+}) {
   return (
-    <div className="grid gap-4 md:grid-cols-3">
-      {plans.map((p) => (
-        <article key={p.name} className="flex flex-col rounded-2xl bg-cream p-6 ring-1 ring-olive/20">
-          <h3 className="font-display text-2xl">{p.name}</h3>
-          <p className="mt-1 text-sm text-olive">{p.serves}</p>
-          <p className="mt-3 flex-1 text-ink-soft">{p.detail}</p>
-          <p className="mt-4 font-medium">{money(p.price)}</p>
-          <a
-            className={`${btn} mt-4 w-fit`}
-            href={wa(`Hola Roma Sandwich! Quiero consultar por ${kind}: ${p.name} (${p.serves}).`)}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Consultar por WhatsApp
-          </a>
-        </article>
-      ))}
+    <div className={`grid gap-4 ${cols === 2 ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
+      {plans.map((p) => {
+        const hasPrice = p.price !== null;
+        const msg = hasPrice
+          ? `Hola Roma Sandwich! Quiero pedir el ${p.name} (${money(p.price)}).`
+          : `Hola Roma Sandwich! Quiero consultar por ${kind}: ${p.name} (${p.serves}).`;
+        return (
+          <article key={p.name} className="flex flex-col rounded-2xl bg-cream p-6 ring-1 ring-olive/20">
+            <div className="flex items-baseline justify-between gap-3">
+              <h3 className="font-display text-2xl text-forest">{p.name}</h3>
+              {hasPrice && (
+                <span className="whitespace-nowrap text-lg font-semibold text-olive">
+                  {money(p.price)}
+                </span>
+              )}
+            </div>
+            <p className="mt-1 text-sm text-olive">{p.serves}</p>
+            <p className="mt-3 flex-1 text-ink-soft">{p.detail}</p>
+            {!hasPrice && <p className="mt-4 font-medium">{money(p.price)}</p>}
+            <a
+              className={`${btn} mt-4 w-fit`}
+              href={wa(msg)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {hasPrice ? "Pedir por WhatsApp" : "Consultar por WhatsApp"}
+            </a>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
+function CombosCatalog() {
+  return (
+    <div>
+      <div className="mb-6">
+        <h3 className="font-display text-2xl font-semibold text-forest sm:text-3xl">
+          Combos Especiales
+        </h3>
+        <p className="mt-2 max-w-3xl text-ink-soft">{combosNote}</p>
+      </div>
+      <Plans plans={specialCombos} kind="combos especiales" cols={2} />
     </div>
   );
 }
@@ -499,6 +537,7 @@ export default function Catalog() {
         {tab === "Sándwiches de miga" && <MigaCatalog />}
         {tab === "Sándwiches Tradicionales" && <TraditionalCatalog />}
         {tab === "Línea Gourmet" && <GourmetCatalog />}
+        {tab === "Combos Especiales" && <CombosCatalog />}
         {tab === "Picadas" && <Plans plans={picadas} kind="picadas" />}
         {tab === "Tortas saladas" && <Plans plans={tortas} kind="tortas saladas" />}
       </div>
