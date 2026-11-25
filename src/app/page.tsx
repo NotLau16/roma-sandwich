@@ -79,7 +79,7 @@ export default function Home() {
           <div className={wrap}>
             <h2 className="font-display text-3xl font-semibold text-forest sm:text-4xl">Nuestros productos</h2>
             <p className="mb-8 mt-2 max-w-2xl text-ink-soft">
-              Elegí entre Sándwiches de miga, Sándwiches Tradicionales, Línea Gourmet en Ciabatta y Focaccia, Combos Especiales, Picadas y Tortas saladas.
+              Tocá cada categoría para desplegar las variedades, combos y precios.
             </p>
             <Reveal><Catalog /></Reveal>
           </div>

@@ -22,39 +22,26 @@ import {
 } from "@/data/romaData";
 import { wa, money } from "@/lib/whatsapp";
 
-const tabs = [
-  "Sándwiches de miga",
-  "Sándwiches Tradicionales",
-  "Línea Gourmet",
-  "Combos Especiales",
-  "Picadas",
-  "Tortas saladas",
-] as const;
-type Tab = (typeof tabs)[number];
+type DisplayItem = {
+  name: string;
+  price: number;
+  waMessage: string;
+  subtext?: string;
+};
 
 type DisplayGroup = {
   category: string;
-  badge: string;
-  items: {
-    name: string;
-    finalPrice: number;
-    actionLabel: string;
-    waMessage: string;
-    baseNote?: string;
-  }[];
+  items: DisplayItem[];
 };
 
-const btn =
-  "inline-flex items-center rounded-full border border-forest px-4 py-2 text-sm font-medium text-forest transition hover:bg-forest hover:text-cream";
-
 const pill = (active: boolean) =>
-  `rounded-full px-4 py-1.5 text-sm transition ${
-    active ? "bg-olive text-cream" : "ring-1 ring-olive/40 text-olive hover:bg-olive/10"
+  `rounded-full px-3.5 py-1 text-xs font-medium transition sm:text-sm ${
+    active ? "bg-olive text-cream" : "bg-cream-card text-olive ring-1 ring-olive/30 hover:ring-olive"
   }`;
 
 const filterChip = (active: boolean) =>
-  `rounded-full px-3.5 py-1 text-xs font-medium transition sm:text-sm ${
-    active ? "bg-forest text-cream" : "bg-cream text-forest ring-1 ring-olive/30 hover:ring-forest"
+  `rounded-full px-3 py-1 text-xs font-medium transition ${
+    active ? "bg-forest text-cream" : "bg-cream-card text-forest ring-1 ring-olive/30 hover:ring-forest"
   }`;
 
 const toggleInList = (list: string[], value: string) =>
@@ -68,70 +55,135 @@ const formatExtrasSuffix = (extras: ExtraOption[], selectedIds: string[]) => {
   return chosen.length ? ` + ${chosen.join(" + ")}` : "";
 };
 
-function CategoryFilterBar({
-  categories,
-  active,
-  onSelect,
-}: {
-  categories: string[];
-  active: string;
-  onSelect: (category: string) => void;
-}) {
+const minPrice = (prices: number[]) => Math.min(...prices);
+
+function Chevron({ open }: { open: boolean }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-sm font-medium text-ink-soft">Categoría:</span>
-      {categories.map((cat) => (
-        <button
-          key={cat}
-          type="button"
-          onClick={() => onSelect(cat)}
-          aria-pressed={active === cat}
-          className={filterChip(active === cat)}
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      fill="none"
+      className={`h-5 w-5 shrink-0 text-forest transition-transform duration-200 ${
+        open ? "rotate-180" : ""
+      }`}
+    >
+      <path
+        d="M5 7.5L10 12.5L15 7.5"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function Accordion({
+  title,
+  meta,
+  open,
+  onToggle,
+  variant = "section",
+  children,
+}: {
+  title: string;
+  meta: string;
+  open: boolean;
+  onToggle: () => void;
+  variant?: "section" | "category";
+  children: React.ReactNode;
+}) {
+  const isSection = variant === "section";
+  return (
+    <div
+      className={`overflow-hidden rounded-2xl transition ${
+        isSection
+          ? "bg-cream ring-1 ring-olive/25"
+          : "bg-cream-card ring-1 ring-olive/20"
+      }`}
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        className={`flex w-full items-center justify-between gap-4 text-left transition hover:bg-olive/5 ${
+          isSection ? "px-5 py-4 sm:px-6 sm:py-5" : "px-4 py-3.5"
+        }`}
+      >
+        <div className="min-w-0">
+          <span
+            className={`block font-display text-forest ${
+              isSection ? "text-xl font-semibold sm:text-2xl" : "text-lg font-medium"
+            }`}
+          >
+            {title}
+          </span>
+          <span className="mt-0.5 block text-xs text-ink-soft sm:text-sm">{meta}</span>
+        </div>
+        <Chevron open={open} />
+      </button>
+      {open && (
+        <div
+          className={`border-t border-olive/15 ${
+            isSection ? "px-5 py-5 sm:px-6" : "px-4 py-2"
+          }`}
         >
-          {cat}
-        </button>
-      ))}
+          {children}
+        </div>
+      )}
     </div>
   );
 }
 
-function CategoryGrid({ groups }: { groups: DisplayGroup[] }) {
+function ItemRow({ name, price, waMessage, subtext }: DisplayItem) {
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      {groups.map((group) => (
-        <article
-          key={group.category}
-          className="rounded-2xl bg-cream p-5 ring-1 ring-olive/20 sm:p-6"
+    <li className="flex items-center justify-between gap-3 py-2.5">
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-ink sm:text-base">{name}</p>
+        {subtext && <p className="text-xs text-ink-soft">{subtext}</p>}
+      </div>
+      <div className="flex shrink-0 items-center gap-3">
+        <span className="text-sm font-semibold tabular-nums text-olive sm:text-base">
+          {money(price)}
+        </span>
+        <a
+          href={wa(waMessage)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-full border border-forest/30 px-3 py-1 text-xs font-medium text-forest transition hover:border-forest hover:bg-forest hover:text-cream"
         >
-          <div className="flex items-baseline justify-between gap-2 border-b border-olive/30 pb-2.5">
-            <h4 className="font-display text-2xl text-forest">{group.category}</h4>
-            <span className="text-xs font-medium text-olive">{group.badge}</span>
-          </div>
-          <ul className="divide-y divide-olive/15">
-            {group.items.map((item) => (
-              <li key={item.name} className="py-3.5">
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className="font-medium text-ink">{item.name}</span>
-                  <span className="whitespace-nowrap font-semibold text-olive">
-                    {money(item.finalPrice)}
-                  </span>
-                </div>
-                <div className="mt-1 flex items-center justify-between gap-2">
-                  <a
-                    className="text-sm text-forest underline underline-offset-4 hover:text-olive"
-                    href={wa(item.waMessage)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {item.actionLabel}
-                  </a>
-                  {item.baseNote && <span className="text-xs text-ink-soft">{item.baseNote}</span>}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </article>
-      ))}
+          Pedir
+        </a>
+      </div>
+    </li>
+  );
+}
+
+function CategoryAccordionList({ groups }: { groups: DisplayGroup[] }) {
+  const [openCategories, setOpenCategories] = useState<string[]>([]);
+
+  return (
+    <div className="grid items-start gap-3 md:grid-cols-2">
+      {groups.map((group) => {
+        const isOpen = openCategories.includes(group.category);
+        const lowest = minPrice(group.items.map((item) => item.price));
+        return (
+          <Accordion
+            key={group.category}
+            title={group.category}
+            meta={`${group.items.length} opciones · Desde ${money(lowest)}`}
+            open={isOpen}
+            onToggle={() => setOpenCategories((prev) => toggleInList(prev, group.category))}
+            variant="category"
+          >
+            <ul className="divide-y divide-olive/15">
+              {group.items.map((item) => (
+                <ItemRow key={item.name} {...item} />
+              ))}
+            </ul>
+          </Accordion>
+        );
+      })}
     </div>
   );
 }
@@ -141,21 +193,18 @@ function ExtrasBanner({
   extras,
   selectedIds,
   onToggle,
-  note = "Opcional: tocá para sumar a tu pedido por WhatsApp",
 }: {
   title: string;
   extras: ExtraOption[];
   selectedIds: string[];
   onToggle: (id: string) => void;
-  note?: string;
 }) {
   return (
-    <div className="mt-8 rounded-2xl border-l-4 border-forest bg-cream p-5 ring-1 ring-olive/20">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h4 className="font-display text-lg font-semibold text-forest">{title}</h4>
-        <span className="text-xs text-ink-soft">{note}</span>
-      </div>
-      <div className="mt-3 flex flex-wrap gap-2.5">
+    <div className="mb-5 rounded-xl bg-cream-card p-3.5 ring-1 ring-olive/20">
+      <p className="text-xs font-medium text-ink-soft">
+        <span className="text-forest">{title}</span> · Opcional para sumar a tu pedido:
+      </p>
+      <div className="mt-2 flex flex-wrap gap-2">
         {extras.map((extra) => {
           const active = selectedIds.includes(extra.id);
           return (
@@ -164,15 +213,15 @@ function ExtrasBanner({
               type="button"
               onClick={() => onToggle(extra.id)}
               aria-pressed={active}
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm transition ${
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
                 active
-                  ? "bg-forest text-cream shadow-sm"
-                  : "bg-cream-card text-ink ring-1 ring-olive/30 hover:ring-forest"
+                  ? "bg-forest text-cream"
+                  : "bg-cream text-ink ring-1 ring-olive/25 hover:ring-forest"
               }`}
             >
               <span>{active ? "✓" : "+"}</span>
               <span>
-                {extra.label}: <strong>{money(extra.price)}</strong>
+                {extra.shortLabel} ({money(extra.price)})
               </span>
             </button>
           );
@@ -184,150 +233,102 @@ function ExtrasBanner({
 
 function MigaCatalog() {
   const [combos, setCombos] = useState<number>(migaPresentations[0].combos);
-  const [categoryFilter, setCategoryFilter] = useState<string>("Todas");
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
 
   const pres = migaPresentations.find((p) => p.combos === combos)!;
-  const categories = ["Todas", ...migaGroups.map((g) => g.category)];
-  const visibleGroups =
-    categoryFilter === "Todas"
-      ? migaGroups
-      : migaGroups.filter((g) => g.category === categoryFilter);
-
   const extrasPerCombo = sumExtras(migaExtras, selectedExtras);
   const extrasText = formatExtrasSuffix(migaExtras, selectedExtras);
 
-  const displayGroups: DisplayGroup[] = visibleGroups.map((group) => ({
+  const groups: DisplayGroup[] = migaGroups.map((group) => ({
     category: group.category,
-    badge: pres.shortLabel,
     items: group.items.map((item) => {
-      const finalPrice = (item.price + extrasPerCombo) * pres.combos;
+      const price = (item.price + extrasPerCombo) * pres.combos;
       return {
         name: item.name,
-        finalPrice,
-        actionLabel: `Pedir ${pres.shortLabel}${extrasText}`,
-        waMessage: `Hola Roma Sandwich! Quiero pedir Sándwiches de Miga: ${item.name} — ${pres.label}${extrasText} (${money(finalPrice)}).`,
-        baseNote:
-          extrasPerCombo > 0 || pres.combos > 1 ? `${money(item.price)} c/3 uni` : undefined,
+        price,
+        waMessage: `Hola Roma Sandwich! Quiero pedir Sándwiches de Miga: ${item.name} — ${pres.label}${extrasText} (${money(price)}).`,
+        subtext: extrasPerCombo > 0 || pres.combos > 1 ? `${money(item.price)} c/3 uni` : undefined,
       };
     }),
   }));
 
   return (
     <div>
-      <div className="mb-6">
-        <h3 className="font-display text-2xl font-semibold text-forest sm:text-3xl">
-          Sándwiches de Miga (Combos de 3 Unidades)
-        </h3>
-        <p className="mt-2 max-w-3xl text-ink-soft">{migaNote}</p>
+      <p className="mb-4 text-sm text-ink-soft">{migaNote}</p>
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <span className="text-xs font-medium text-ink-soft sm:text-sm">Presentación:</span>
+        {migaPresentations.map((p) => (
+          <button
+            key={p.combos}
+            type="button"
+            onClick={() => setCombos(p.combos)}
+            aria-pressed={combos === p.combos}
+            className={pill(combos === p.combos)}
+          >
+            {p.label}
+          </button>
+        ))}
       </div>
-
-      <div className="mb-6 space-y-3">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <span className="text-sm font-medium text-ink-soft">Presentación:</span>
-          {migaPresentations.map((p) => (
-            <button
-              key={p.combos}
-              type="button"
-              onClick={() => setCombos(p.combos)}
-              aria-pressed={combos === p.combos}
-              className={pill(combos === p.combos)}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-
-        <CategoryFilterBar
-          categories={categories}
-          active={categoryFilter}
-          onSelect={setCategoryFilter}
-        />
-      </div>
-
-      <CategoryGrid groups={displayGroups} />
 
       <ExtrasBanner
-        title="Adicionales para Sándwiches de Miga (3 Unidades)"
+        title="Adicionales (c/3 uni)"
         extras={migaExtras}
         selectedIds={selectedExtras}
         onToggle={(id) => setSelectedExtras((prev) => toggleInList(prev, id))}
-        note="Valor adicional por combo de 3 unidades (opcional para WhatsApp)"
       />
+
+      <CategoryAccordionList groups={groups} />
     </div>
   );
 }
 
 function TraditionalCatalog() {
   const [bread, setBread] = useState<(typeof traditionalBreads)[number]["id"]>("Pan Francés");
-  const [categoryFilter, setCategoryFilter] = useState<string>("Todas");
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
-
-  const categories = ["Todas", ...traditionalGroups.map((g) => g.category)];
-  const visibleGroups =
-    categoryFilter === "Todas"
-      ? traditionalGroups
-      : traditionalGroups.filter((g) => g.category === categoryFilter);
 
   const extrasTotal = sumExtras(traditionalExtras, selectedExtras);
   const extrasText = formatExtrasSuffix(traditionalExtras, selectedExtras);
 
-  const displayGroups: DisplayGroup[] = visibleGroups.map((group) => ({
+  const groups: DisplayGroup[] = traditionalGroups.map((group) => ({
     category: group.category,
-    badge: "Pan Francés / Pebete",
     items: group.items.map((item) => {
       const basePrice = bread === "Pan Francés" ? item.priceFrench : item.pricePebete;
-      const finalPrice = basePrice + extrasTotal;
+      const price = basePrice + extrasTotal;
       return {
         name: item.name,
-        finalPrice,
-        actionLabel: `Pedir en ${bread}${extrasText}`,
-        waMessage: `Hola Roma Sandwich! Quiero pedir un Sándwich Tradicional: ${item.name} en ${bread}${extrasText} (${money(finalPrice)}).`,
-        baseNote: extrasTotal > 0 ? `Base ${money(basePrice)}` : undefined,
+        price,
+        waMessage: `Hola Roma Sandwich! Quiero pedir un Sándwich Tradicional: ${item.name} en ${bread}${extrasText} (${money(price)}).`,
+        subtext: extrasTotal > 0 ? `Base ${money(basePrice)}` : undefined,
       };
     }),
   }));
 
   return (
     <div>
-      <div className="mb-6">
-        <h3 className="font-display text-2xl font-semibold text-forest sm:text-3xl">
-          Sándwiches Tradicionales (Pan Francés / Pebete)
-        </h3>
-        <p className="mt-2 max-w-3xl text-ink-soft">{traditionalNote}</p>
+      <p className="mb-4 text-sm text-ink-soft">{traditionalNote}</p>
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <span className="text-xs font-medium text-ink-soft sm:text-sm">Tipo de pan:</span>
+        {traditionalBreads.map((b) => (
+          <button
+            key={b.id}
+            type="button"
+            onClick={() => setBread(b.id)}
+            aria-pressed={bread === b.id}
+            className={pill(bread === b.id)}
+          >
+            {b.label}
+          </button>
+        ))}
       </div>
-
-      <div className="mb-6 space-y-3">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <span className="text-sm font-medium text-ink-soft">Tipo de pan:</span>
-          {traditionalBreads.map((b) => (
-            <button
-              key={b.id}
-              type="button"
-              onClick={() => setBread(b.id)}
-              aria-pressed={bread === b.id}
-              className={pill(bread === b.id)}
-            >
-              {b.label}
-            </button>
-          ))}
-        </div>
-
-        <CategoryFilterBar
-          categories={categories}
-          active={categoryFilter}
-          onSelect={setCategoryFilter}
-        />
-      </div>
-
-      <CategoryGrid groups={displayGroups} />
 
       <ExtrasBanner
-        title="Adicionales para Sándwiches Tradicionales"
+        title="Adicionales"
         extras={traditionalExtras}
         selectedIds={selectedExtras}
         onToggle={(id) => setSelectedExtras((prev) => toggleInList(prev, id))}
       />
+
+      <CategoryAccordionList groups={groups} />
     </div>
   );
 }
@@ -349,21 +350,16 @@ function GourmetCatalog() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h3 className="font-display text-2xl font-semibold text-forest sm:text-3xl">
-          Línea Gourmet: Pan Ciabatta y Pan Focaccia
-        </h3>
-        <p className="mt-2 text-ink-soft">
-          Mismo valor en Pan Ciabatta y Pan Focaccia.{" "}
-          <strong className="font-medium text-forest">
-            Verduras a elección: {gourmetVeggies.join(", ")}.
-          </strong>
-        </p>
-      </div>
+      <p className="mb-4 text-sm text-ink-soft">
+        Mismo valor en Pan Ciabatta y Pan Focaccia.{" "}
+        <strong className="font-medium text-forest">
+          Verduras a elección: {gourmetVeggies.join(", ")}.
+        </strong>
+      </p>
 
-      <div className="mb-6 space-y-3">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <span className="text-sm font-medium text-ink-soft">Tipo de pan:</span>
+      <div className="mb-4 space-y-2.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-medium text-ink-soft sm:text-sm">Tipo de pan:</span>
           {gourmetBreads.map((b) => (
             <button
               key={b.id}
@@ -378,8 +374,8 @@ function GourmetCatalog() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-medium text-ink-soft">
-            Verduras a elección (opcional, hasta 2):
+          <span className="text-xs font-medium text-ink-soft sm:text-sm">
+            Verduras (opcional, hasta 2):
           </span>
           {gourmetVeggies.map((veggie) => {
             const active = selectedVeggies.includes(veggie);
@@ -398,149 +394,157 @@ function GourmetCatalog() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <ExtrasBanner
+        title="Adicionales"
+        extras={gourmetExtras}
+        selectedIds={selectedExtras}
+        onToggle={(id) => setSelectedExtras((prev) => toggleInList(prev, id))}
+      />
+
+      <ul className="divide-y divide-olive/15 rounded-xl bg-cream-card px-4 py-1 ring-1 ring-olive/20">
         {gourmetItems.map((item) => {
           const basePrice = bread === "Pan Ciabatta" ? item.priceCiabatta : item.priceFocaccia;
-          const finalPrice = basePrice + extrasTotal;
+          const price = basePrice + extrasTotal;
           const allowsVeggies = item.name.toLowerCase().includes("verduras");
           const veggiesText =
             allowsVeggies && selectedVeggies.length > 0
               ? ` (Verduras: ${selectedVeggies.join(" y ")})`
               : "";
-          const msg = `Hola Roma Sandwich! Quiero pedir Línea Gourmet: ${item.name} en ${bread}${veggiesText}${extrasText} (${money(finalPrice)}).`;
-
           return (
-            <article
+            <ItemRow
               key={item.name}
-              className="flex flex-col justify-between rounded-2xl bg-cream p-5 ring-1 ring-olive/20"
-            >
-              <div>
-                <div className="flex items-start justify-between gap-3">
-                  <h4 className="font-display text-xl text-forest">{item.name}</h4>
-                  <span className="whitespace-nowrap text-lg font-semibold text-olive">
-                    {money(finalPrice)}
-                  </span>
-                </div>
-                <p className="mt-1 text-xs text-ink-soft">
-                  Disponible en Pan Ciabatta y Pan Focaccia
-                  {extrasTotal > 0 ? ` · Base ${money(basePrice)}` : ""}
-                </p>
-              </div>
-              <a
-                className={`${btn} mt-4 w-fit`}
-                href={wa(msg)}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Pedir en {bread}
-                {veggiesText}
-                {extrasText}
-              </a>
-            </article>
+              name={item.name}
+              price={price}
+              waMessage={`Hola Roma Sandwich! Quiero pedir Línea Gourmet: ${item.name} en ${bread}${veggiesText}${extrasText} (${money(price)}).`}
+              subtext={extrasTotal > 0 ? `Base ${money(basePrice)}` : undefined}
+            />
           );
         })}
-      </div>
-
-      <ExtrasBanner
-        title="Adicionales para Ciabatta y Focaccia"
-        extras={gourmetExtras}
-        selectedIds={selectedExtras}
-        onToggle={(id) => setSelectedExtras((prev) => toggleInList(prev, id))}
-      />
+      </ul>
     </div>
   );
 }
 
-function Plans({
+function PlansList({
   plans,
   kind,
+  note,
   cols = 3,
 }: {
   plans: Plan[];
   kind: string;
+  note?: string;
   cols?: 2 | 3;
 }) {
   return (
-    <div className={`grid gap-4 ${cols === 2 ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
-      {plans.map((p) => {
-        const hasPrice = p.price !== null;
-        const msg = hasPrice
-          ? `Hola Roma Sandwich! Quiero pedir el ${p.name} (${money(p.price)}).`
-          : `Hola Roma Sandwich! Quiero consultar por ${kind}: ${p.name} (${p.serves}).`;
-        return (
-          <article key={p.name} className="flex flex-col rounded-2xl bg-cream p-6 ring-1 ring-olive/20">
-            <div className="flex items-baseline justify-between gap-3">
-              <h3 className="font-display text-2xl text-forest">{p.name}</h3>
-              {hasPrice && (
-                <span className="whitespace-nowrap text-lg font-semibold text-olive">
-                  {money(p.price)}
-                </span>
-              )}
-            </div>
-            <p className="mt-1 text-sm text-olive">{p.serves}</p>
-            <p className="mt-3 flex-1 text-ink-soft">{p.detail}</p>
-            {!hasPrice && <p className="mt-4 font-medium">{money(p.price)}</p>}
-            <a
-              className={`${btn} mt-4 w-fit`}
-              href={wa(msg)}
-              target="_blank"
-              rel="noopener noreferrer"
+    <div>
+      {note && <p className="mb-4 text-sm text-ink-soft">{note}</p>}
+      <div className={`grid gap-3 ${cols === 2 ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
+        {plans.map((p) => {
+          const hasPrice = p.price !== null;
+          const msg = hasPrice
+            ? `Hola Roma Sandwich! Quiero pedir el ${p.name} (${money(p.price)}).`
+            : `Hola Roma Sandwich! Quiero consultar por ${kind}: ${p.name} (${p.serves}).`;
+          return (
+            <article
+              key={p.name}
+              className="flex flex-col rounded-xl bg-cream-card p-4 ring-1 ring-olive/20"
             >
-              {hasPrice ? "Pedir por WhatsApp" : "Consultar por WhatsApp"}
-            </a>
-          </article>
-        );
-      })}
+              <div className="flex items-baseline justify-between gap-3">
+                <h4 className="font-display text-xl text-forest">{p.name}</h4>
+                {hasPrice && (
+                  <span className="whitespace-nowrap font-semibold text-olive">
+                    {money(p.price)}
+                  </span>
+                )}
+              </div>
+              <p className="mt-0.5 text-xs font-medium text-olive">{p.serves}</p>
+              <p className="mt-2 flex-1 text-sm text-ink-soft">{p.detail}</p>
+              <div className="mt-3 flex items-center justify-between gap-2">
+                {!hasPrice && <span className="text-sm font-medium text-olive">{money(p.price)}</span>}
+                <a
+                  href={wa(msg)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full border border-forest/30 px-3.5 py-1 text-xs font-medium text-forest transition hover:border-forest hover:bg-forest hover:text-cream"
+                >
+                  {hasPrice ? "Pedir por WhatsApp" : "Consultar"}
+                </a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-function CombosCatalog() {
-  return (
-    <div>
-      <div className="mb-6">
-        <h3 className="font-display text-2xl font-semibold text-forest sm:text-3xl">
-          Combos Especiales
-        </h3>
-        <p className="mt-2 max-w-3xl text-ink-soft">{combosNote}</p>
-      </div>
-      <Plans plans={specialCombos} kind="combos especiales" cols={2} />
-    </div>
-  );
-}
+const sections = [
+  {
+    id: "miga",
+    title: "Sándwiches de Miga (Combos de 3 Unidades)",
+    meta: `${migaGroups.length} variedades base · Desde ${money(
+      minPrice(migaGroups.flatMap((g) => g.items.map((i) => i.price))),
+    )}`,
+    render: () => <MigaCatalog />,
+  },
+  {
+    id: "tradicionales",
+    title: "Sándwiches Tradicionales (Pan Francés / Pebete)",
+    meta: `${traditionalGroups.length} variedades base · Desde ${money(
+      minPrice(traditionalGroups.flatMap((g) => g.items.map((i) => i.priceFrench))),
+    )}`,
+    render: () => <TraditionalCatalog />,
+  },
+  {
+    id: "gourmet",
+    title: "Línea Gourmet (Pan Ciabatta y Pan Focaccia)",
+    meta: `${gourmetItems.length} combinaciones · Desde ${money(
+      minPrice(gourmetItems.map((i) => i.priceCiabatta)),
+    )}`,
+    render: () => <GourmetCatalog />,
+  },
+  {
+    id: "combos",
+    title: "Combos Especiales",
+    meta: `${specialCombos.length} combos con bebida incluida · Desde ${money(
+      minPrice(specialCombos.map((c) => c.price ?? 0)),
+    )}`,
+    render: () => (
+      <PlansList plans={specialCombos} kind="combos especiales" note={combosNote} cols={2} />
+    ),
+  },
+  {
+    id: "picadas",
+    title: "Picadas",
+    meta: "Tablas para 4, 6 y 8 personas · Consultar precio",
+    render: () => <PlansList plans={picadas} kind="picadas" />,
+  },
+  {
+    id: "tortas",
+    title: "Tortas Saladas",
+    meta: "Chica (6 a 8 porciones) y Grande (12 a 16 porciones) · Consultar precio",
+    render: () => <PlansList plans={tortas} kind="tortas saladas" cols={2} />,
+  },
+] as const;
 
 export default function Catalog() {
-  const [tab, setTab] = useState<Tab>("Sándwiches de miga");
+  const [openSections, setOpenSections] = useState<string[]>([]);
 
   return (
-    <div>
-      <div role="tablist" className="flex flex-wrap gap-2">
-        {tabs.map((t) => (
-          <button
-            key={t}
-            type="button"
-            role="tab"
-            aria-selected={tab === t}
-            onClick={() => setTab(t)}
-            className={`rounded-full px-5 py-2 text-sm font-medium transition ${
-              tab === t
-                ? "bg-forest text-cream"
-                : "bg-cream text-forest ring-1 ring-olive/30 hover:ring-forest"
-            }`}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-8" role="tabpanel">
-        {tab === "Sándwiches de miga" && <MigaCatalog />}
-        {tab === "Sándwiches Tradicionales" && <TraditionalCatalog />}
-        {tab === "Línea Gourmet" && <GourmetCatalog />}
-        {tab === "Combos Especiales" && <CombosCatalog />}
-        {tab === "Picadas" && <Plans plans={picadas} kind="picadas" />}
-        {tab === "Tortas saladas" && <Plans plans={tortas} kind="tortas saladas" />}
-      </div>
+    <div className="space-y-3">
+      {sections.map((section) => (
+        <Accordion
+          key={section.id}
+          title={section.title}
+          meta={section.meta}
+          open={openSections.includes(section.id)}
+          onToggle={() => setOpenSections((prev) => toggleInList(prev, section.id))}
+          variant="section"
+        >
+          {section.render()}
+        </Accordion>
+      ))}
     </div>
   );
 }
