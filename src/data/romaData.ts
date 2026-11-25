@@ -63,12 +63,139 @@ export const tortas: Plan[] = [
   { name: "Torta salada grande", serves: "12 a 16 porciones", detail: "Para cumpleaños y mesas saladas.", price: null },
 ];
 
-export const cateringServices = ["Sándwiches de miga", "Picadas", "Tortas saladas", "Mesa salada completa"];
+export type TraditionalItem = { name: string; priceFrench: number; pricePebete: number };
+export type TraditionalGroup = { category: string; items: TraditionalItem[] };
+export type ExtraOption = { id: string; label: string; shortLabel: string; price: number };
+export type GourmetItem = { name: string; priceCiabatta: number; priceFocaccia: number };
+
+export const traditionalBreads = [
+  { id: "Pan Francés", label: "Pan Francés (alargado)" },
+  { id: "Pan Pebete", label: "Pan Pebete (redondo)" },
+] as const;
+
+export const traditionalNote =
+  "Opciones elaboradas en el momento con dos variedades de pan (alargado / redondo) al mismo valor por unidad.";
+
+export const traditionalGroups: TraditionalGroup[] = [
+  {
+    category: "Paleta",
+    items: [
+      { name: "Paleta y Queso", priceFrench: 2000, pricePebete: 2000 },
+      { name: "Paleta y Verduras", priceFrench: 2000, pricePebete: 2000 },
+      { name: "Paleta y un Agregado Especial", priceFrench: 3000, pricePebete: 3000 },
+      { name: "Paleta y dos Agregados Especiales", priceFrench: 3500, pricePebete: 3500 },
+    ],
+  },
+  {
+    category: "Salame",
+    items: [
+      { name: "Salame y Queso", priceFrench: 2500, pricePebete: 2500 },
+      { name: "Salame y Verduras", priceFrench: 2500, pricePebete: 2500 },
+      { name: "Salame y un Agregado Especial", priceFrench: 3500, pricePebete: 3500 },
+      { name: "Salame y dos Agregados Especiales", priceFrench: 4000, pricePebete: 4000 },
+    ],
+  },
+  {
+    category: "Jamón Cocido",
+    items: [
+      { name: "Jamón Cocido y Queso", priceFrench: 2500, pricePebete: 2500 },
+      { name: "Jamón Cocido y Verduras", priceFrench: 2500, pricePebete: 2500 },
+      { name: "Jamón Cocido y un Agregado Especial", priceFrench: 3500, pricePebete: 3500 },
+      { name: "Jamón Cocido y dos Agregados Especiales", priceFrench: 4000, pricePebete: 4000 },
+    ],
+  },
+  {
+    category: "Jamón Crudo",
+    items: [
+      { name: "Jamón Crudo y Queso", priceFrench: 4000, pricePebete: 4000 },
+      { name: "Jamón Crudo y Verduras", priceFrench: 4000, pricePebete: 4000 },
+      { name: "Jamón Crudo / Salame y un Agregado Especial", priceFrench: 5000, pricePebete: 5000 },
+      { name: "Jamón Crudo / Salame y dos Agregados Especiales", priceFrench: 5500, pricePebete: 5500 },
+    ],
+  },
+  {
+    category: "Bondiola",
+    items: [
+      { name: "Bondiola y Queso", priceFrench: 4000, pricePebete: 4000 },
+      { name: "Bondiola y Verduras", priceFrench: 4000, pricePebete: 4000 },
+      { name: "Bondiola y un Agregado Especial", priceFrench: 5000, pricePebete: 5000 },
+      { name: "Bondiola y dos Agregados Especiales", priceFrench: 5500, pricePebete: 5500 },
+    ],
+  },
+  {
+    category: "Lomo Horneado",
+    items: [
+      { name: "Lomo Horneado y Queso", priceFrench: 4000, pricePebete: 4000 },
+      { name: "Lomo Horneado y Verduras", priceFrench: 4000, pricePebete: 4000 },
+      { name: "Lomo Horneado y un Agregado Especial", priceFrench: 5000, pricePebete: 5000 },
+      { name: "Lomo Horneado y dos Agregados Especiales", priceFrench: 5500, pricePebete: 5500 },
+    ],
+  },
+  {
+    category: "Ternera",
+    items: [
+      { name: "Ternera y Queso", priceFrench: 4000, pricePebete: 4000 },
+      { name: "Ternera y Verduras", priceFrench: 4000, pricePebete: 4000 },
+      { name: "Ternera y un Agregado Especial", priceFrench: 5000, pricePebete: 5000 },
+      { name: "Ternera y dos Agregados Especiales", priceFrench: 5500, pricePebete: 5500 },
+    ],
+  },
+  {
+    category: "Vegetariano",
+    items: [
+      { name: "Doble Queso", priceFrench: 2500, pricePebete: 2500 },
+      { name: "Queso y Verduras", priceFrench: 2500, pricePebete: 2500 },
+      { name: "Queso y un Agregado Especial", priceFrench: 3500, pricePebete: 3500 },
+      { name: "Queso y dos Agregados Especiales", priceFrench: 4000, pricePebete: 4000 },
+    ],
+  },
+];
+
+export const traditionalExtras: ExtraOption[] = [
+  { id: "extra-queso", label: "Sumale Extra Queso", shortLabel: "Extra Queso", price: 700 },
+  { id: "verdura", label: "Sumale una Verdura", shortLabel: "Una Verdura", price: 700 },
+  { id: "agregado-especial", label: "Sumale un Agregado Especial", shortLabel: "Agregado Especial", price: 1500 },
+];
+
+export const gourmetBreads = [
+  { id: "Pan Ciabatta", label: "Pan Ciabatta" },
+  { id: "Pan Focaccia", label: "Pan Focaccia" },
+] as const;
+
+export const gourmetVeggies = ["Tomate", "Huevo", "Lechuga", "Aceituna", "Zanahoria"] as const;
+
+export const gourmetNote = "Verduras a elección: Tomate, Huevo, Lechuga, Aceituna y Zanahoria.";
+
+export const gourmetItems: GourmetItem[] = [
+  { name: "Jamón Cocido, Queso y dos Verduras", priceCiabatta: 8000, priceFocaccia: 8000 },
+  { name: "Salame, Queso y dos Verduras a elección", priceCiabatta: 8000, priceFocaccia: 8000 },
+  { name: "Doble Queso y dos Verduras a elección", priceCiabatta: 8000, priceFocaccia: 8000 },
+  { name: "Ternera, Queso y dos Verduras a elección", priceCiabatta: 9500, priceFocaccia: 9500 },
+  { name: "Bondiola, Queso y dos Verduras a elección", priceCiabatta: 9500, priceFocaccia: 9500 },
+  { name: "Doble Queso, Tomate, Roquefort y Nueces", priceCiabatta: 10500, priceFocaccia: 10500 },
+  { name: "Jamón Crudo, Rúcula, Tomate y Nueces", priceCiabatta: 11500, priceFocaccia: 11500 },
+  { name: "Ternera, Morrones, Huevo y Aceitunas", priceCiabatta: 11500, priceFocaccia: 11500 },
+];
+
+export const gourmetExtras: ExtraOption[] = [
+  { id: "extra-queso", label: "Sumale Extra Queso", shortLabel: "Extra Queso", price: 1000 },
+  { id: "verdura", label: "Sumale una Verdura", shortLabel: "Una Verdura", price: 1000 },
+  { id: "agregado-especial", label: "Sumale un Agregado Especial", shortLabel: "Agregado Especial", price: 2000 },
+];
+
+export const cateringServices = [
+  "Sándwiches de miga",
+  "Sándwiches Tradicionales (Pan Francés / Pebete)",
+  "Línea Gourmet (Pan Ciabatta / Focaccia)",
+  "Picadas",
+  "Tortas saladas",
+  "Mesa salada completa",
+];
 export const cateringEvents = ["Cumpleaños", "Oficina o reunión", "Evento familiar", "Otro"];
 
 export const whyUs = [
   { title: "Elaboración artesanal y fresca", text: "Hacemos todo en nuestra fábrica, cada día." },
-  { title: "Variedad en un solo lugar", text: "Miga, picadas, tortas saladas y catering." },
+  { title: "Variedad en un solo lugar", text: "Miga, tradicionales, ciabatta, focaccia, picadas, tortas saladas y catering." },
   { title: "Atención directa por WhatsApp", text: "Hablás con quien arma tu pedido." },
   { title: "Retiro y envíos en Córdoba", text: "Pasá por Montevideo 712 o coordinamos la entrega." },
 ];

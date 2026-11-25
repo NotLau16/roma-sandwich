@@ -6,7 +6,7 @@ export default function Reveal({ children, className = "" }: { children: React.R
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { el.classList.add("in"); io.disconnect(); } }, { threshold: 0.12 });
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { el.classList.add("in"); io.disconnect(); } }, { threshold: 0.01 });
     io.observe(el);
     return () => io.disconnect();
   }, []);
