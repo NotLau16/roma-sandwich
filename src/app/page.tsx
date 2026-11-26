@@ -54,11 +54,11 @@ export default function Home() {
               />
               <span className="font-medium">Fábrica artesanal en Córdoba</span>
             </div>
-            <h1 className="font-display text-4xl font-semibold leading-tight text-forest sm:text-6xl">
-              Sándwiches de miga artesanales, hechos hoy en Córdoba
+            <h1 className="font-display text-3xl font-semibold leading-tight text-forest sm:text-5xl">
+              Para los días largos, las ganas de algo rico y los brindis que vienen
             </h1>
             <p className="mt-5 max-w-prose text-lg leading-relaxed text-ink-soft">
-              Sándwiches de miga, tradicionales en pan francés o pebete, línea gourmet en ciabatta y focaccia, combos especiales, picadas, tortas saladas y catering para tus eventos. Elaborados en nuestra fábrica de Montevideo 712, con productos de calidad y mucho amor.
+              A veces es un antojo de mediodía, a veces una picada que salva la noche y otras una mesa llena para celebrar. En Montevideo 712 armamos cada pedido con amor y calidez para acompañarte en cada etapa.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a className={cta} href={wa("Hola Roma Sandwich! Quiero hacer un pedido.")} target="_blank" rel="noopener noreferrer">Hacer pedido por WhatsApp</a>
