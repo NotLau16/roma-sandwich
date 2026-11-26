@@ -95,12 +95,6 @@ export const migaGroups: MigaGroup[] = [
   },
 ];
 
-export const migaExtras: ExtraOption[] = [
-  { id: "extra-queso", label: "Sumale Extra Queso", shortLabel: "Extra Queso", price: 1500 },
-  { id: "verdura", label: "Sumale una Verdura", shortLabel: "Una Verdura", price: 1500 },
-  { id: "agregado", label: "Sumale un Agregado", shortLabel: "Agregado", price: 3000 },
-];
-
 export type Plan = { name: string; serves: string; detail: string; price: number | null };
 export const picadas: Plan[] = [
   { name: "Picada para 4", serves: "4 personas", detail: "Fiambres, quesos y acompañamientos de la casa.", price: null },
@@ -114,7 +108,6 @@ export const tortas: Plan[] = [
 
 export type TraditionalItem = { name: string; priceFrench: number; pricePebete: number };
 export type TraditionalGroup = { category: string; items: TraditionalItem[] };
-export type ExtraOption = { id: string; label: string; shortLabel: string; price: number };
 export type GourmetItem = { name: string; priceCiabatta: number; priceFocaccia: number };
 
 export const traditionalBreads = [
@@ -200,12 +193,6 @@ export const traditionalGroups: TraditionalGroup[] = [
   },
 ];
 
-export const traditionalExtras: ExtraOption[] = [
-  { id: "extra-queso", label: "Sumale Extra Queso", shortLabel: "Extra Queso", price: 700 },
-  { id: "verdura", label: "Sumale una Verdura", shortLabel: "Una Verdura", price: 700 },
-  { id: "agregado-especial", label: "Sumale un Agregado Especial", shortLabel: "Agregado Especial", price: 1500 },
-];
-
 export const gourmetBreads = [
   { id: "Pan Ciabatta", label: "Pan Ciabatta" },
   { id: "Pan Focaccia", label: "Pan Focaccia" },
@@ -224,12 +211,6 @@ export const gourmetItems: GourmetItem[] = [
   { name: "Doble Queso, Tomate, Roquefort y Nueces", priceCiabatta: 10500, priceFocaccia: 10500 },
   { name: "Jamón Crudo, Rúcula, Tomate y Nueces", priceCiabatta: 11500, priceFocaccia: 11500 },
   { name: "Ternera, Morrones, Huevo y Aceitunas", priceCiabatta: 11500, priceFocaccia: 11500 },
-];
-
-export const gourmetExtras: ExtraOption[] = [
-  { id: "extra-queso", label: "Sumale Extra Queso", shortLabel: "Extra Queso", price: 1000 },
-  { id: "verdura", label: "Sumale una Verdura", shortLabel: "Una Verdura", price: 1000 },
-  { id: "agregado-especial", label: "Sumale un Agregado Especial", shortLabel: "Agregado Especial", price: 2000 },
 ];
 
 export const combosNote =

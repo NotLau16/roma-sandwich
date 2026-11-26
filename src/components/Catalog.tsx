@@ -4,21 +4,17 @@ import {
   traditionalBreads,
   traditionalNote,
   traditionalGroups,
-  traditionalExtras,
   gourmetBreads,
   gourmetVeggies,
   gourmetItems,
-  gourmetExtras,
   migaPresentations,
   migaNote,
   migaGroups,
-  migaExtras,
   combosNote,
   specialCombos,
   picadas,
   tortas,
   type Plan,
-  type ExtraOption,
 } from "@/data/romaData";
 import { wa, money } from "@/lib/whatsapp";
 
@@ -46,14 +42,6 @@ const filterChip = (active: boolean) =>
 
 const toggleInList = (list: string[], value: string) =>
   list.includes(value) ? list.filter((item) => item !== value) : [...list, value];
-
-const sumExtras = (extras: ExtraOption[], selectedIds: string[]) =>
-  extras.reduce((total, extra) => (selectedIds.includes(extra.id) ? total + extra.price : total), 0);
-
-const formatExtrasSuffix = (extras: ExtraOption[], selectedIds: string[]) => {
-  const chosen = extras.filter((e) => selectedIds.includes(e.id)).map((e) => e.shortLabel);
-  return chosen.length ? ` + ${chosen.join(" + ")}` : "";
-};
 
 const minPrice = (prices: number[]) => Math.min(...prices);
 
@@ -188,66 +176,19 @@ function CategoryAccordionList({ groups }: { groups: DisplayGroup[] }) {
   );
 }
 
-function ExtrasBanner({
-  title,
-  extras,
-  selectedIds,
-  onToggle,
-}: {
-  title: string;
-  extras: ExtraOption[];
-  selectedIds: string[];
-  onToggle: (id: string) => void;
-}) {
-  return (
-    <div className="mb-5 rounded-xl bg-cream-card p-3.5 ring-1 ring-olive/20">
-      <p className="text-xs font-medium text-ink-soft">
-        <span className="text-forest">{title}</span> · Opcional para sumar a tu pedido:
-      </p>
-      <div className="mt-2 flex flex-wrap gap-2">
-        {extras.map((extra) => {
-          const active = selectedIds.includes(extra.id);
-          return (
-            <button
-              key={extra.id}
-              type="button"
-              onClick={() => onToggle(extra.id)}
-              aria-pressed={active}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition ${
-                active
-                  ? "bg-forest text-cream"
-                  : "bg-cream text-ink ring-1 ring-olive/25 hover:ring-forest"
-              }`}
-            >
-              <span>{active ? "✓" : "+"}</span>
-              <span>
-                {extra.shortLabel} ({money(extra.price)})
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 function MigaCatalog() {
   const [combos, setCombos] = useState<number>(migaPresentations[0].combos);
-  const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
-
   const pres = migaPresentations.find((p) => p.combos === combos)!;
-  const extrasPerCombo = sumExtras(migaExtras, selectedExtras);
-  const extrasText = formatExtrasSuffix(migaExtras, selectedExtras);
 
   const groups: DisplayGroup[] = migaGroups.map((group) => ({
     category: group.category,
     items: group.items.map((item) => {
-      const price = (item.price + extrasPerCombo) * pres.combos;
+      const price = item.price * pres.combos;
       return {
         name: item.name,
         price,
-        waMessage: `Hola Roma Sandwich! Quiero pedir Sándwiches de Miga: ${item.name} — ${pres.label}${extrasText} (${money(price)}).`,
-        subtext: extrasPerCombo > 0 || pres.combos > 1 ? `${money(item.price)} c/3 uni` : undefined,
+        waMessage: `Hola Roma Sandwich! Quiero pedir Sándwiches de Miga: ${item.name} — ${pres.label} (${money(price)}).`,
+        subtext: pres.combos > 1 ? `${money(item.price)} c/3 uni` : undefined,
       };
     }),
   }));
@@ -255,7 +196,7 @@ function MigaCatalog() {
   return (
     <div>
       <p className="mb-4 text-sm text-ink-soft">{migaNote}</p>
-      <div className="mb-4 flex flex-wrap items-center gap-2">
+      <div className="mb-5 flex flex-wrap items-center gap-2">
         <span className="text-xs font-medium text-ink-soft sm:text-sm">Presentación:</span>
         {migaPresentations.map((p) => (
           <button
@@ -270,13 +211,6 @@ function MigaCatalog() {
         ))}
       </div>
 
-      <ExtrasBanner
-        title="Adicionales (c/3 uni)"
-        extras={migaExtras}
-        selectedIds={selectedExtras}
-        onToggle={(id) => setSelectedExtras((prev) => toggleInList(prev, id))}
-      />
-
       <CategoryAccordionList groups={groups} />
     </div>
   );
@@ -284,21 +218,15 @@ function MigaCatalog() {
 
 function TraditionalCatalog() {
   const [bread, setBread] = useState<(typeof traditionalBreads)[number]["id"]>("Pan Francés");
-  const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
-
-  const extrasTotal = sumExtras(traditionalExtras, selectedExtras);
-  const extrasText = formatExtrasSuffix(traditionalExtras, selectedExtras);
 
   const groups: DisplayGroup[] = traditionalGroups.map((group) => ({
     category: group.category,
     items: group.items.map((item) => {
-      const basePrice = bread === "Pan Francés" ? item.priceFrench : item.pricePebete;
-      const price = basePrice + extrasTotal;
+      const price = bread === "Pan Francés" ? item.priceFrench : item.pricePebete;
       return {
         name: item.name,
         price,
-        waMessage: `Hola Roma Sandwich! Quiero pedir un Sándwich Tradicional: ${item.name} en ${bread}${extrasText} (${money(price)}).`,
-        subtext: extrasTotal > 0 ? `Base ${money(basePrice)}` : undefined,
+        waMessage: `Hola Roma Sandwich! Quiero pedir un Sándwich Tradicional: ${item.name} en ${bread} (${money(price)}).`,
       };
     }),
   }));
@@ -306,7 +234,7 @@ function TraditionalCatalog() {
   return (
     <div>
       <p className="mb-4 text-sm text-ink-soft">{traditionalNote}</p>
-      <div className="mb-4 flex flex-wrap items-center gap-2">
+      <div className="mb-5 flex flex-wrap items-center gap-2">
         <span className="text-xs font-medium text-ink-soft sm:text-sm">Tipo de pan:</span>
         {traditionalBreads.map((b) => (
           <button
@@ -321,13 +249,6 @@ function TraditionalCatalog() {
         ))}
       </div>
 
-      <ExtrasBanner
-        title="Adicionales"
-        extras={traditionalExtras}
-        selectedIds={selectedExtras}
-        onToggle={(id) => setSelectedExtras((prev) => toggleInList(prev, id))}
-      />
-
       <CategoryAccordionList groups={groups} />
     </div>
   );
@@ -336,10 +257,6 @@ function TraditionalCatalog() {
 function GourmetCatalog() {
   const [bread, setBread] = useState<(typeof gourmetBreads)[number]["id"]>("Pan Ciabatta");
   const [selectedVeggies, setSelectedVeggies] = useState<string[]>([]);
-  const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
-
-  const extrasTotal = sumExtras(gourmetExtras, selectedExtras);
-  const extrasText = formatExtrasSuffix(gourmetExtras, selectedExtras);
 
   const toggleVeggie = (veggie: string) => {
     setSelectedVeggies((prev) => {
@@ -357,7 +274,7 @@ function GourmetCatalog() {
         </strong>
       </p>
 
-      <div className="mb-4 space-y-2.5">
+      <div className="mb-5 space-y-2.5">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-medium text-ink-soft sm:text-sm">Tipo de pan:</span>
           {gourmetBreads.map((b) => (
@@ -394,17 +311,9 @@ function GourmetCatalog() {
         </div>
       </div>
 
-      <ExtrasBanner
-        title="Adicionales"
-        extras={gourmetExtras}
-        selectedIds={selectedExtras}
-        onToggle={(id) => setSelectedExtras((prev) => toggleInList(prev, id))}
-      />
-
       <ul className="divide-y divide-olive/15 rounded-xl bg-cream-card px-4 py-1 ring-1 ring-olive/20">
         {gourmetItems.map((item) => {
-          const basePrice = bread === "Pan Ciabatta" ? item.priceCiabatta : item.priceFocaccia;
-          const price = basePrice + extrasTotal;
+          const price = bread === "Pan Ciabatta" ? item.priceCiabatta : item.priceFocaccia;
           const allowsVeggies = item.name.toLowerCase().includes("verduras");
           const veggiesText =
             allowsVeggies && selectedVeggies.length > 0
@@ -415,8 +324,7 @@ function GourmetCatalog() {
               key={item.name}
               name={item.name}
               price={price}
-              waMessage={`Hola Roma Sandwich! Quiero pedir Línea Gourmet: ${item.name} en ${bread}${veggiesText}${extrasText} (${money(price)}).`}
-              subtext={extrasTotal > 0 ? `Base ${money(basePrice)}` : undefined}
+              waMessage={`Hola Roma Sandwich! Quiero pedir Línea Gourmet: ${item.name} en ${bread}${veggiesText} (${money(price)}).`}
             />
           );
         })}
