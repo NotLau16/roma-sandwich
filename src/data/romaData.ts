@@ -222,12 +222,11 @@ export const cateringEvents = [
 ];
 
 export type SocialChannel = {
-  id: "instagram" | "tiktok" | "facebook";
+  id: "instagram";
   name: string;
   handle: string;
-  url: string | null;
+  url: string;
   description: string;
-  badge: string;
 };
 
 export const socialChannels: SocialChannel[] = [
@@ -237,24 +236,7 @@ export const socialChannels: SocialChannel[] = [
     handle: "@roma.sandwich",
     url: "https://www.instagram.com/roma.sandwich/",
     description:
-      "Novedades diarias, promos especiales, combos del día, lanzamientos y el detrás de escena en nuestra fábrica.",
-    badge: "Canal oficial activo",
-  },
-  {
-    id: "tiktok",
-    name: "TikTok",
-    handle: "Próximamente",
-    url: null,
-    description: "Muy pronto videos, preparación en vivo y lanzamientos desde nuestra cocina.",
-    badge: "Próximamente",
-  },
-  {
-    id: "facebook",
-    name: "Facebook",
-    handle: "Próximamente",
-    url: null,
-    description: "Próximamente también novedades, promociones y atención para nuestra comunidad.",
-    badge: "Próximamente",
+      "Promos del día, lanzamientos y el detrás de escena artesanal de nuestra fábrica.",
   },
 ];
 

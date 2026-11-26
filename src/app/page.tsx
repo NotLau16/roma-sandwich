@@ -2,7 +2,7 @@ import Image from "next/image";
 import Catalog from "@/components/Catalog";
 import Catering from "@/components/Catering";
 import Reveal from "@/components/Reveal";
-import { business, hours, socialChannels, whyUs, type SocialChannel } from "@/data/romaData";
+import { business, hours, socialChannels, whyUs } from "@/data/romaData";
 import { wa } from "@/lib/whatsapp";
 
 const wrap = "mx-auto w-full max-w-6xl px-5 sm:px-8";
@@ -42,36 +42,12 @@ const cateringPillars = [
   },
 ];
 
-function SocialIcon({ id }: { id: SocialChannel["id"] }) {
-  if (id === "instagram") {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden="true">
-        <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.9" />
-        <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.9" />
-        <circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" />
-      </svg>
-    );
-  }
-  if (id === "tiktok") {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden="true">
-        <path
-          d="M14 4v10.2a3.8 3.8 0 1 1-3-3.7V7.4a7 7 0 1 0 6 6.9V8.8a6.2 6.2 0 0 0 4 1.4V7.1A3.9 3.9 0 0 1 17 4h-3Z"
-          stroke="currentColor"
-          strokeWidth="1.75"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
+function InstagramIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden="true">
-      <path
-        d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8a1 1 0 0 1 1-1Z"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinejoin="round"
-      />
+    <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.9" />
+      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.9" />
+      <circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" />
     </svg>
   );
 }
@@ -273,110 +249,39 @@ export default function Home() {
 
         <section id="redes" className="scroll-mt-16 bg-cream py-16">
           <div className={wrap}>
-            <div className="max-w-2xl">
-              <span className="inline-flex items-center rounded-full border border-forest/20 bg-cream-card px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-olive">
-                Comunidad y novedades
-              </span>
-              <h2 className="mt-3 font-display text-3xl font-semibold text-forest sm:text-4xl">
-                Seguinos en nuestras redes
-              </h2>
-              <p className="mt-2 text-ink-soft">
-                Enterate antes de nuestras promos, lanzamientos, combos especiales y el día a día en nuestra fábrica.
-              </p>
-            </div>
-
-            <div className="mt-8 grid gap-5 lg:grid-cols-3">
-              {socialChannels.map((channel) => {
-                const isInstagram = channel.id === "instagram" && channel.url !== null;
-                if (isInstagram && channel.url) {
-                  return (
-                    <a
-                      key={channel.id}
-                      href={channel.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] p-6 text-white shadow-xl transition hover:-translate-y-0.5 hover:shadow-2xl lg:col-span-1"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
-                            <SocialIcon id={channel.id} />
-                          </span>
-                          <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur-sm">
-                            {channel.badge}
-                          </span>
-                        </div>
-                        <h3 className="mt-5 font-display text-2xl font-semibold">{channel.name}</h3>
-                        <p className="text-base font-medium text-white/95">{channel.handle}</p>
-                        <p className="mt-3 text-sm leading-relaxed text-white/90">
-                          {channel.description}
-                        </p>
-                      </div>
-                      <span className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#C13584] shadow-sm transition group-hover:scale-[1.02]">
-                        Seguir a {channel.handle}
-                      </span>
-                    </a>
-                  );
-                }
-
-                if (channel.url) {
-                  return (
-                    <a
-                      key={channel.id}
-                      href={channel.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex flex-col justify-between rounded-3xl bg-cream-card p-6 ring-1 ring-olive/25 transition hover:-translate-y-0.5 hover:ring-forest"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-forest/10 text-forest">
-                            <SocialIcon id={channel.id} />
-                          </span>
-                          <span className="rounded-full bg-olive/10 px-3 py-1 text-xs font-medium text-olive">
-                            {channel.badge}
-                          </span>
-                        </div>
-                        <h3 className="mt-5 font-display text-2xl font-semibold text-forest">
-                          {channel.name}
-                        </h3>
-                        <p className="text-base font-medium text-olive">{channel.handle}</p>
-                        <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-                          {channel.description}
-                        </p>
-                      </div>
-                      <span className="mt-6 inline-flex w-fit items-center rounded-full border border-forest px-5 py-2 text-sm font-medium text-forest">
-                        Seguir en {channel.name}
-                      </span>
-                    </a>
-                  );
-                }
-
-                return (
-                  <article
-                    key={channel.id}
-                    className="flex flex-col justify-between rounded-3xl border border-dashed border-olive/35 bg-cream-card/70 p-6"
-                  >
+            <div className="space-y-4">
+              {socialChannels.map((channel) => (
+                <a
+                  key={channel.id}
+                  href={channel.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex flex-col justify-between gap-8 rounded-3xl border border-forest/15 bg-cream-card p-8 shadow-sm transition hover:-translate-y-0.5 hover:border-forest/35 hover:shadow-md md:flex-row md:items-center md:p-10"
+                >
+                  <div className="flex items-start gap-5">
+                    <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-forest text-cream shadow-sm transition group-hover:scale-105">
+                      <InstagramIcon />
+                    </span>
                     <div>
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-forest/10 text-forest/75">
-                          <SocialIcon id={channel.id} />
-                        </span>
-                        <span className="rounded-full bg-olive/10 px-3 py-1 text-xs font-medium text-olive">
-                          {channel.badge}
-                        </span>
-                      </div>
-                      <h3 className="mt-5 font-display text-2xl font-semibold text-forest">
-                        {channel.name}
-                      </h3>
-                      <p className="text-sm font-medium text-ink-soft">{channel.handle}</p>
-                      <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                      <span className="text-xs font-semibold uppercase tracking-widest text-olive">
+                        {channel.name} oficial
+                      </span>
+                      <h2 className="mt-1 font-display text-3xl font-semibold text-forest sm:text-4xl">
+                        {channel.handle}
+                      </h2>
+                      <p className="mt-2 max-w-xl text-base leading-relaxed text-ink-soft">
                         {channel.description}
                       </p>
                     </div>
-                  </article>
-                );
-              })}
+                  </div>
+                  <span className="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-forest px-7 py-3.5 text-sm font-semibold text-cream shadow-sm transition group-hover:bg-forest-deep md:self-center">
+                    <span>Seguir en {channel.name}</span>
+                    <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
+                      →
+                    </span>
+                  </span>
+                </a>
+              ))}
             </div>
           </div>
         </section>
