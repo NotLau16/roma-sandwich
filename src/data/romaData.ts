@@ -15,11 +15,10 @@ export const business = {
 
 // Editá acá los horarios (se muestran tal cual en la web).
 export const hours = {
-  note: "Horarios a confirmar. Escribinos por WhatsApp para pedidos y delivery.",
+  note: "Escribinos por WhatsApp para pedidos programados y entregas en Córdoba.",
   rows: [
-    { day: "Lunes a viernes", time: "A confirmar" },
-    { day: "Sábados", time: "A confirmar" },
-    { day: "Domingos y feriados", time: "A confirmar" },
+    { day: "Lunes a sábados", time: "9:00 a 21:00 hs" },
+    { day: "Domingos y feriados", time: "Cerrado" },
   ],
   delivery: "Retiro por Montevideo 712 y envíos en Córdoba, a coordinar por WhatsApp.",
 };
@@ -99,23 +98,23 @@ export const tortas: Plan[] = [
   { name: "Torta salada grande", serves: "12 a 16 porciones", detail: "Para cumpleaños y mesas saladas.", price: null },
 ];
 
-export type TraditionalItem = { name: string; priceFrench: number | null; pricePebete: number | null };
+export type TraditionalItem = { name: string; priceArabe: number | null; pricePebete: number | null };
 export type TraditionalGroup = { category: string; items: TraditionalItem[] };
 export type GourmetItem = { name: string; priceCiabatta: number | null; priceFocaccia: number | null };
 
 export const traditionalBreads = [
-  { id: "Pan Francés", label: "Pan Francés (alargado)" },
-  { id: "Pan Pebete", label: "Pan Pebete (redondo)" },
+  { id: "Pan Árabe", label: "Pan Árabe" },
+  { id: "Pan Pebete", label: "Pan Pebete" },
 ] as const;
 
 export const traditionalNote =
-  "Opciones elaboradas en el momento con dos variedades de pan (alargado / redondo).";
+  "Opciones elaboradas en el momento con dos variedades de pan (Pan Árabe / Pan Pebete).";
 
 const traditional4 = (base: string, specialBase = base): TraditionalItem[] => [
-  { name: `${base} y Queso`, priceFrench: null, pricePebete: null },
-  { name: `${base} y Verduras`, priceFrench: null, pricePebete: null },
-  { name: `${specialBase} y un Agregado Especial`, priceFrench: null, pricePebete: null },
-  { name: `${specialBase} y dos Agregados Especiales`, priceFrench: null, pricePebete: null },
+  { name: `${base} y Queso`, priceArabe: null, pricePebete: null },
+  { name: `${base} y Verduras`, priceArabe: null, pricePebete: null },
+  { name: `${specialBase} y un Agregado Especial`, priceArabe: null, pricePebete: null },
+  { name: `${specialBase} y dos Agregados Especiales`, priceArabe: null, pricePebete: null },
 ];
 
 export const traditionalGroups: TraditionalGroup[] = [
@@ -129,10 +128,10 @@ export const traditionalGroups: TraditionalGroup[] = [
   {
     category: "Vegetariano",
     items: [
-      { name: "Doble Queso", priceFrench: null, pricePebete: null },
-      { name: "Queso y Verduras", priceFrench: null, pricePebete: null },
-      { name: "Queso y un Agregado Especial", priceFrench: null, pricePebete: null },
-      { name: "Queso y dos Agregados Especiales", priceFrench: null, pricePebete: null },
+      { name: "Doble Queso", priceArabe: null, pricePebete: null },
+      { name: "Queso y Verduras", priceArabe: null, pricePebete: null },
+      { name: "Queso y un Agregado Especial", priceArabe: null, pricePebete: null },
+      { name: "Queso y dos Agregados Especiales", priceArabe: null, pricePebete: null },
     ],
   },
 ];
@@ -207,14 +206,57 @@ export const specialCombos: Plan[] = [
 
 export const cateringServices = [
   "Sándwiches de miga",
-  "Sándwiches Tradicionales (Pan Francés / Pebete)",
+  "Sándwiches Tradicionales (Pan Árabe / Pebete)",
   "Línea Gourmet (Pan Ciabatta / Focaccia)",
   "Combos Especiales",
   "Picadas",
   "Tortas saladas",
   "Mesa salada completa",
 ];
-export const cateringEvents = ["Cumpleaños", "Oficina o reunión", "Evento familiar", "Otro"];
+export const cateringEvents = [
+  "Evento corporativo / Oficina",
+  "Cumpleaños o aniversario",
+  "Reunión familiar",
+  "Recepción o brindis",
+  "Otro evento",
+];
+
+export type SocialChannel = {
+  id: "instagram" | "tiktok" | "facebook";
+  name: string;
+  handle: string;
+  url: string | null;
+  description: string;
+  badge: string;
+};
+
+export const socialChannels: SocialChannel[] = [
+  {
+    id: "instagram",
+    name: "Instagram",
+    handle: "@roma.sandwich",
+    url: "https://www.instagram.com/roma.sandwich/",
+    description:
+      "Novedades diarias, promos especiales, combos del día, lanzamientos y el detrás de escena en nuestra fábrica.",
+    badge: "Canal oficial activo",
+  },
+  {
+    id: "tiktok",
+    name: "TikTok",
+    handle: "Próximamente",
+    url: null,
+    description: "Muy pronto videos, preparación en vivo y lanzamientos desde nuestra cocina.",
+    badge: "Próximamente",
+  },
+  {
+    id: "facebook",
+    name: "Facebook",
+    handle: "Próximamente",
+    url: null,
+    description: "Próximamente también novedades, promociones y atención para nuestra comunidad.",
+    badge: "Próximamente",
+  },
+];
 
 export const whyUs = [
   { title: "Elaboración artesanal y fresca", text: "Hacemos todo en nuestra fábrica, cada día." },

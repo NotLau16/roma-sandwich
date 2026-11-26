@@ -325,7 +325,7 @@ function MigaCatalog({ cart }: { cart: CartActions }) {
 }
 
 function TraditionalCatalog({ cart }: { cart: CartActions }) {
-  const [bread, setBread] = useState<(typeof traditionalBreads)[number]["id"]>("Pan Francés");
+  const [bread, setBread] = useState<(typeof traditionalBreads)[number]["id"]>("Pan Árabe");
 
   const groups: DisplayGroup[] = traditionalGroups.map((group) => ({
     category: group.category,
@@ -334,7 +334,7 @@ function TraditionalCatalog({ cart }: { cart: CartActions }) {
       section: "Sándwich Tradicional",
       name: item.name,
       variant: bread,
-      price: bread === "Pan Francés" ? item.priceFrench : item.pricePebete,
+      price: bread === "Pan Árabe" ? item.priceArabe : item.pricePebete,
       unitKind: "unit",
     })),
   }));
@@ -711,8 +711,8 @@ export default function Catalog() {
     },
     {
       id: "tradicionales",
-      title: "Sándwiches Tradicionales (Pan Francés / Pebete)",
-      meta: `${traditionalGroups.length} variedades base · Pan Francés o Pebete`,
+      title: "Sándwiches Tradicionales (Pan Árabe / Pebete)",
+      meta: `${traditionalGroups.length} variedades base · Pan Árabe o Pebete`,
       render: () => <TraditionalCatalog cart={cart} />,
     },
     {
@@ -798,17 +798,17 @@ export default function Catalog() {
       </div>
 
       {cartItems.length > 0 && !drawerOpen && (
-        <div className="fixed bottom-4 left-1/2 z-30 w-[calc(100%-2rem)] max-w-md -translate-x-1/2">
+        <div className="fixed bottom-5 left-4 z-40 sm:left-6">
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
-            className="flex w-full items-center justify-between gap-3 rounded-full bg-forest px-5 py-3 text-sm font-medium text-cream shadow-xl ring-1 ring-cream/25 transition hover:bg-forest-deep"
+            className="inline-flex items-center gap-2.5 rounded-full bg-forest px-4 py-2.5 text-sm font-medium text-cream shadow-xl ring-1 ring-cream/25 transition hover:bg-forest-deep"
           >
             <span>
-              Tu pedido · {cartItems.length} {cartItems.length === 1 ? "producto" : "productos"}
+              Carrito ({cartItems.length})
             </span>
-            <span className="rounded-full bg-cream px-3.5 py-1 text-xs font-semibold text-forest">
-              Ver carrito
+            <span className="rounded-full bg-cream px-3 py-1 text-xs font-semibold text-forest">
+              Ver pedido
             </span>
           </button>
         </div>
