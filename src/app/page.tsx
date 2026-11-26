@@ -78,7 +78,7 @@ function SocialIcon({ id }: { id: SocialChannel["id"] }) {
 
 function WhatsAppIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="currentColor" className="h-7 w-7" aria-hidden="true">
       <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.7.8-.8 1-.2.2-.3.2-.6.1a6.7 6.7 0 0 1-2-1.2 7.5 7.5 0 0 1-1.4-1.7c-.1-.3 0-.4.1-.5l.4-.5.3-.5c.1-.2 0-.3 0-.5l-.7-1.7c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2c0 1.3.9 2.5 1.1 2.7a11.3 11.3 0 0 0 4.3 3.8c1.6.7 2.2.7 3 .6.5-.1 1.4-.6 1.6-1.1.2-.6.2-1.1.1-1.2-.1-.1-.2-.2-.5-.3Z" />
     </svg>
   );
@@ -414,10 +414,10 @@ export default function Home() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Escribir por WhatsApp"
-        className="fixed bottom-5 right-4 z-40 inline-flex items-center gap-2 rounded-full bg-[#25D366] p-3.5 text-white shadow-xl shadow-[#25D366]/35 transition hover:scale-105 hover:bg-[#1EBE5D] sm:right-6 sm:px-5 sm:py-3"
+        title="Escribir por WhatsApp"
+        className="fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl shadow-[#25D366]/35 transition hover:scale-105 hover:bg-[#1EBE5D]"
       >
         <WhatsAppIcon />
-        <span className="hidden text-sm font-semibold sm:inline">WhatsApp</span>
       </a>
     </>
   );
