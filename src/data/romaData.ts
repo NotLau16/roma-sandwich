@@ -1,5 +1,5 @@
 // Única fuente de verdad: productos, precios, horarios y contacto.
-// price / pricePerUnit en null = se muestra "Consultar". Cargá valores en ARS.
+// price en null = sin precio publicado (se consulta presupuesto por WhatsApp). Cargá valores en ARS cuando estén definidos.
 
 export const business = {
   name: "Roma Sandwich",
@@ -24,7 +24,7 @@ export const hours = {
   delivery: "Retiro por Montevideo 712 y envíos en Córdoba, a coordinar por WhatsApp.",
 };
 
-export type MigaItem = { name: string; price: number };
+export type MigaItem = { name: string; price: number | null };
 export type MigaGroup = { category: string; items: MigaItem[] };
 
 export const migaPresentations = [
@@ -36,61 +36,54 @@ export const migaPresentations = [
 
 export const migaNote = "Presentación en combos de 3 unidades según variedad base y combinaciones.";
 
-const miga12 = (
-  base: string,
-  classic: number,
-  mid: number,
-  gourmet: number,
-  quesoRucula: number,
-  cereza: number,
-): MigaItem[] => [
-  { name: `${base} y Queso`, price: classic },
-  { name: `${base} y Verduras`, price: classic },
-  { name: `${base} y Pickles`, price: classic },
-  { name: `${base} y Choclo`, price: mid },
-  { name: `${base}, Morrones, Huevo y Aceituna`, price: gourmet },
-  { name: `${base} y Ananá`, price: mid },
-  { name: `${base} y Palmito con Salsa Golf`, price: mid },
-  { name: `${base}, Rúcula, Huevo y Tomate`, price: gourmet },
-  { name: `${base}, Queso y Rúcula`, price: quesoRucula },
-  { name: `${base}, Ananá y Cereza`, price: cereza },
-  { name: `${base} y Roquefort`, price: mid },
-  { name: `${base} y Champiñón`, price: mid },
+const miga12 = (base: string): MigaItem[] => [
+  { name: `${base} y Queso`, price: null },
+  { name: `${base} y Verduras`, price: null },
+  { name: `${base} y Pickles`, price: null },
+  { name: `${base} y Choclo`, price: null },
+  { name: `${base}, Morrones, Huevo y Aceituna`, price: null },
+  { name: `${base} y Ananá`, price: null },
+  { name: `${base} y Palmito con Salsa Golf`, price: null },
+  { name: `${base}, Rúcula, Huevo y Tomate`, price: null },
+  { name: `${base}, Queso y Rúcula`, price: null },
+  { name: `${base}, Ananá y Cereza`, price: null },
+  { name: `${base} y Roquefort`, price: null },
+  { name: `${base} y Champiñón`, price: null },
 ];
 
 export const migaGroups: MigaGroup[] = [
-  { category: "Jamón Cocido", items: miga12("Jamón Cocido", 7200, 9700, 10700, 10700, 12300) },
-  { category: "Paleta", items: miga12("Paleta", 6200, 8700, 10700, 9700, 11700) },
-  { category: "Salame", items: miga12("Salame", 7200, 9700, 10700, 10700, 12300) },
-  { category: "Ternera", items: miga12("Ternera", 11200, 13700, 14700, 14700, 16200) },
-  { category: "Pollo", items: miga12("Pollo", 11200, 13700, 14700, 14700, 16200) },
-  { category: "Bondiola", items: miga12("Bondiola", 11200, 13700, 14700, 14700, 16200) },
-  { category: "Jamón Crudo", items: miga12("Jamón Crudo", 11200, 13700, 14700, 14700, 16200) },
-  { category: "Lomo Horneado", items: miga12("Lomo Horneado", 11200, 13700, 14700, 14700, 16200) },
+  { category: "Jamón Cocido", items: miga12("Jamón Cocido") },
+  { category: "Paleta", items: miga12("Paleta") },
+  { category: "Salame", items: miga12("Salame") },
+  { category: "Ternera", items: miga12("Ternera") },
+  { category: "Pollo", items: miga12("Pollo") },
+  { category: "Bondiola", items: miga12("Bondiola") },
+  { category: "Jamón Crudo", items: miga12("Jamón Crudo") },
+  { category: "Lomo Horneado", items: miga12("Lomo Horneado") },
   {
     category: "Vegetarianos",
     items: [
-      { name: "Doble Queso", price: 7700 },
-      { name: "Queso y Verduras", price: 7200 },
-      { name: "Queso y Pickles", price: 7200 },
-      { name: "Queso y Choclo", price: 9700 },
-      { name: "Queso, Morrones, Huevo y Aceituna", price: 10700 },
-      { name: "Queso, Rúcula, Huevo y Tomate", price: 10700 },
-      { name: "Queso y Ananá", price: 9700 },
-      { name: "Queso, Ananá y Cereza", price: 12200 },
-      { name: "Queso y Roquefort", price: 9700 },
-      { name: "Queso Roquefort y una Verdura a elección", price: 10700 },
+      { name: "Doble Queso", price: null },
+      { name: "Queso y Verduras", price: null },
+      { name: "Queso y Pickles", price: null },
+      { name: "Queso y Choclo", price: null },
+      { name: "Queso, Morrones, Huevo y Aceituna", price: null },
+      { name: "Queso, Rúcula, Huevo y Tomate", price: null },
+      { name: "Queso y Ananá", price: null },
+      { name: "Queso, Ananá y Cereza", price: null },
+      { name: "Queso y Roquefort", price: null },
+      { name: "Queso Roquefort y una Verdura a elección", price: null },
     ],
   },
   {
     category: "Atún",
     items: [
-      { name: "Atún y Queso", price: 11200 },
-      { name: "Atún y Verduras", price: 11200 },
-      { name: "Atún y Pickles", price: 11200 },
-      { name: "Atún, Pickles y dos Verduras a elección", price: 12200 },
-      { name: "Atún, Morrones, Huevo y Aceituna", price: 14700 },
-      { name: "Queso, Rúcula, Huevo y Tomate (Línea Atún)", price: 14700 },
+      { name: "Atún y Queso", price: null },
+      { name: "Atún y Verduras", price: null },
+      { name: "Atún y Pickles", price: null },
+      { name: "Atún, Pickles y dos Verduras a elección", price: null },
+      { name: "Atún, Morrones, Huevo y Aceituna", price: null },
+      { name: "Queso, Rúcula, Huevo y Tomate (Línea Atún)", price: null },
     ],
   },
 ];
@@ -106,9 +99,9 @@ export const tortas: Plan[] = [
   { name: "Torta salada grande", serves: "12 a 16 porciones", detail: "Para cumpleaños y mesas saladas.", price: null },
 ];
 
-export type TraditionalItem = { name: string; priceFrench: number; pricePebete: number };
+export type TraditionalItem = { name: string; priceFrench: number | null; pricePebete: number | null };
 export type TraditionalGroup = { category: string; items: TraditionalItem[] };
-export type GourmetItem = { name: string; priceCiabatta: number; priceFocaccia: number };
+export type GourmetItem = { name: string; priceCiabatta: number | null; priceFocaccia: number | null };
 
 export const traditionalBreads = [
   { id: "Pan Francés", label: "Pan Francés (alargado)" },
@@ -116,79 +109,30 @@ export const traditionalBreads = [
 ] as const;
 
 export const traditionalNote =
-  "Opciones elaboradas en el momento con dos variedades de pan (alargado / redondo) al mismo valor por unidad.";
+  "Opciones elaboradas en el momento con dos variedades de pan (alargado / redondo).";
+
+const traditional4 = (base: string, specialBase = base): TraditionalItem[] => [
+  { name: `${base} y Queso`, priceFrench: null, pricePebete: null },
+  { name: `${base} y Verduras`, priceFrench: null, pricePebete: null },
+  { name: `${specialBase} y un Agregado Especial`, priceFrench: null, pricePebete: null },
+  { name: `${specialBase} y dos Agregados Especiales`, priceFrench: null, pricePebete: null },
+];
 
 export const traditionalGroups: TraditionalGroup[] = [
-  {
-    category: "Paleta",
-    items: [
-      { name: "Paleta y Queso", priceFrench: 2000, pricePebete: 2000 },
-      { name: "Paleta y Verduras", priceFrench: 2000, pricePebete: 2000 },
-      { name: "Paleta y un Agregado Especial", priceFrench: 3000, pricePebete: 3000 },
-      { name: "Paleta y dos Agregados Especiales", priceFrench: 3500, pricePebete: 3500 },
-    ],
-  },
-  {
-    category: "Salame",
-    items: [
-      { name: "Salame y Queso", priceFrench: 2500, pricePebete: 2500 },
-      { name: "Salame y Verduras", priceFrench: 2500, pricePebete: 2500 },
-      { name: "Salame y un Agregado Especial", priceFrench: 3500, pricePebete: 3500 },
-      { name: "Salame y dos Agregados Especiales", priceFrench: 4000, pricePebete: 4000 },
-    ],
-  },
-  {
-    category: "Jamón Cocido",
-    items: [
-      { name: "Jamón Cocido y Queso", priceFrench: 2500, pricePebete: 2500 },
-      { name: "Jamón Cocido y Verduras", priceFrench: 2500, pricePebete: 2500 },
-      { name: "Jamón Cocido y un Agregado Especial", priceFrench: 3500, pricePebete: 3500 },
-      { name: "Jamón Cocido y dos Agregados Especiales", priceFrench: 4000, pricePebete: 4000 },
-    ],
-  },
-  {
-    category: "Jamón Crudo",
-    items: [
-      { name: "Jamón Crudo y Queso", priceFrench: 4000, pricePebete: 4000 },
-      { name: "Jamón Crudo y Verduras", priceFrench: 4000, pricePebete: 4000 },
-      { name: "Jamón Crudo / Salame y un Agregado Especial", priceFrench: 5000, pricePebete: 5000 },
-      { name: "Jamón Crudo / Salame y dos Agregados Especiales", priceFrench: 5500, pricePebete: 5500 },
-    ],
-  },
-  {
-    category: "Bondiola",
-    items: [
-      { name: "Bondiola y Queso", priceFrench: 4000, pricePebete: 4000 },
-      { name: "Bondiola y Verduras", priceFrench: 4000, pricePebete: 4000 },
-      { name: "Bondiola y un Agregado Especial", priceFrench: 5000, pricePebete: 5000 },
-      { name: "Bondiola y dos Agregados Especiales", priceFrench: 5500, pricePebete: 5500 },
-    ],
-  },
-  {
-    category: "Lomo Horneado",
-    items: [
-      { name: "Lomo Horneado y Queso", priceFrench: 4000, pricePebete: 4000 },
-      { name: "Lomo Horneado y Verduras", priceFrench: 4000, pricePebete: 4000 },
-      { name: "Lomo Horneado y un Agregado Especial", priceFrench: 5000, pricePebete: 5000 },
-      { name: "Lomo Horneado y dos Agregados Especiales", priceFrench: 5500, pricePebete: 5500 },
-    ],
-  },
-  {
-    category: "Ternera",
-    items: [
-      { name: "Ternera y Queso", priceFrench: 4000, pricePebete: 4000 },
-      { name: "Ternera y Verduras", priceFrench: 4000, pricePebete: 4000 },
-      { name: "Ternera y un Agregado Especial", priceFrench: 5000, pricePebete: 5000 },
-      { name: "Ternera y dos Agregados Especiales", priceFrench: 5500, pricePebete: 5500 },
-    ],
-  },
+  { category: "Paleta", items: traditional4("Paleta") },
+  { category: "Salame", items: traditional4("Salame") },
+  { category: "Jamón Cocido", items: traditional4("Jamón Cocido") },
+  { category: "Jamón Crudo", items: traditional4("Jamón Crudo", "Jamón Crudo / Salame") },
+  { category: "Bondiola", items: traditional4("Bondiola") },
+  { category: "Lomo Horneado", items: traditional4("Lomo Horneado") },
+  { category: "Ternera", items: traditional4("Ternera") },
   {
     category: "Vegetariano",
     items: [
-      { name: "Doble Queso", priceFrench: 2500, pricePebete: 2500 },
-      { name: "Queso y Verduras", priceFrench: 2500, pricePebete: 2500 },
-      { name: "Queso y un Agregado Especial", priceFrench: 3500, pricePebete: 3500 },
-      { name: "Queso y dos Agregados Especiales", priceFrench: 4000, pricePebete: 4000 },
+      { name: "Doble Queso", priceFrench: null, pricePebete: null },
+      { name: "Queso y Verduras", priceFrench: null, pricePebete: null },
+      { name: "Queso y un Agregado Especial", priceFrench: null, pricePebete: null },
+      { name: "Queso y dos Agregados Especiales", priceFrench: null, pricePebete: null },
     ],
   },
 ];
@@ -203,14 +147,14 @@ export const gourmetVeggies = ["Tomate", "Huevo", "Lechuga", "Aceituna", "Zanaho
 export const gourmetNote = "Verduras a elección: Tomate, Huevo, Lechuga, Aceituna y Zanahoria.";
 
 export const gourmetItems: GourmetItem[] = [
-  { name: "Jamón Cocido, Queso y dos Verduras", priceCiabatta: 8000, priceFocaccia: 8000 },
-  { name: "Salame, Queso y dos Verduras a elección", priceCiabatta: 8000, priceFocaccia: 8000 },
-  { name: "Doble Queso y dos Verduras a elección", priceCiabatta: 8000, priceFocaccia: 8000 },
-  { name: "Ternera, Queso y dos Verduras a elección", priceCiabatta: 9500, priceFocaccia: 9500 },
-  { name: "Bondiola, Queso y dos Verduras a elección", priceCiabatta: 9500, priceFocaccia: 9500 },
-  { name: "Doble Queso, Tomate, Roquefort y Nueces", priceCiabatta: 10500, priceFocaccia: 10500 },
-  { name: "Jamón Crudo, Rúcula, Tomate y Nueces", priceCiabatta: 11500, priceFocaccia: 11500 },
-  { name: "Ternera, Morrones, Huevo y Aceitunas", priceCiabatta: 11500, priceFocaccia: 11500 },
+  { name: "Jamón Cocido, Queso y dos Verduras", priceCiabatta: null, priceFocaccia: null },
+  { name: "Salame, Queso y dos Verduras a elección", priceCiabatta: null, priceFocaccia: null },
+  { name: "Doble Queso y dos Verduras a elección", priceCiabatta: null, priceFocaccia: null },
+  { name: "Ternera, Queso y dos Verduras a elección", priceCiabatta: null, priceFocaccia: null },
+  { name: "Bondiola, Queso y dos Verduras a elección", priceCiabatta: null, priceFocaccia: null },
+  { name: "Doble Queso, Tomate, Roquefort y Nueces", priceCiabatta: null, priceFocaccia: null },
+  { name: "Jamón Crudo, Rúcula, Tomate y Nueces", priceCiabatta: null, priceFocaccia: null },
+  { name: "Ternera, Morrones, Huevo y Aceitunas", priceCiabatta: null, priceFocaccia: null },
 ];
 
 export const combosNote =
@@ -222,42 +166,42 @@ export const specialCombos: Plan[] = [
     serves: "1 docena + Coca-Cola 1.5 L",
     detail:
       "1 docena de sándwiches de miga triangular de paleta y queso o paleta y verdura + Coca-Cola de 1.5 litros.",
-    price: 25500,
+    price: null,
   },
   {
     name: "Combo Clásico 2",
     serves: "1 docena + Coca-Cola 1.5 L",
     detail:
       "1 docena de sándwiches de miga triangular de jamón cocido y queso o jamón cocido y verdura + Coca-Cola de 1.5 litros.",
-    price: 28500,
+    price: null,
   },
   {
     name: "Combo Familiar 1",
     serves: "2 docenas + Coca-Cola 1.5 L",
     detail:
       "2 docenas de sándwiches de miga triangular de paleta y queso o paleta y verdura + Coca-Cola de 1.5 litros.",
-    price: 47000,
+    price: null,
   },
   {
     name: "Combo Familiar 2",
     serves: "2 docenas + Coca-Cola 1.5 L",
     detail:
       "2 docenas de sándwiches de miga triangular de jamón cocido y queso o jamón cocido y verdura + Coca-Cola de 1.5 litros.",
-    price: 53000,
+    price: null,
   },
   {
     name: "Combo Break 1",
     serves: "Individual + lata de Coca-Cola",
     detail:
       "Tortuguita o pebete de jamón cocido o salame con queso y dos verduras a elección + lata de Coca-Cola.",
-    price: 6200,
+    price: null,
   },
   {
     name: "Combo Break 2",
     serves: "Individual + lata de Coca-Cola",
     detail:
       "Tortuguita o pebete de lomo horneado, bondiola, jamón crudo o ternera con queso y dos verduras a elección + lata de Coca-Cola.",
-    price: 7700,
+    price: null,
   },
 ];
 

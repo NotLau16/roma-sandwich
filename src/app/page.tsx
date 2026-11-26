@@ -94,9 +94,9 @@ export default function Home() {
           <div className={wrap}>
             <h2 className="font-display text-3xl font-semibold text-forest sm:text-4xl">Nuestros productos</h2>
             <p className="mb-8 mt-2 max-w-2xl text-ink-soft">
-              Tocá cada categoría para desplegar las variedades, combos y precios.
+              Tocá cada categoría para desplegar las opciones, sumalas a tu carrito y pedí tu presupuesto por WhatsApp.
             </p>
-            <Reveal><Catalog /></Reveal>
+            <Catalog />
           </div>
         </section>
 
