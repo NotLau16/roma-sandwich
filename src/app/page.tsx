@@ -9,9 +9,9 @@ const wrap = "mx-auto w-full max-w-6xl px-5 sm:px-8";
 const cta = "inline-flex items-center rounded-full bg-forest px-6 py-3 font-medium text-cream transition hover:bg-forest-deep";
 
 const photos = [
-  { label: "Triples de miga", src: "/img/triples.jpg" },
-  { label: "Tablas y picadas", src: "/img/picadas.jpg" },
-  { label: "Tortas saladas", src: "/img/tortas.jpg" },
+  { label: "Triples de miga", src: "/img/triples.jpg", alt: "Triples de miga artesanales en tabla de madera dentro del local" },
+  { label: "Tablas y picadas", src: "/img/picadas.jpg", alt: "Tabla de picada artesanal con fiambres, quesos y aceitunas" },
+  { label: "Tortas saladas", src: "/img/tortas.jpg", alt: "Torta salada artesanal decorada con jamón, queso y aceitunas" },
 ];
 
 export default function Home() {
@@ -65,11 +65,26 @@ export default function Home() {
               <a className="inline-flex items-center rounded-full border border-forest px-6 py-3 font-medium text-forest hover:bg-forest hover:text-cream" href="#productos">Ver catálogo</a>
             </div>
           </div>
-          {/* Reemplazá los fondos por fotos reales: guardalas en /public/img con estos nombres. */}
           <div className="grid grid-cols-2 gap-3">
             {photos.map((p, i) => (
-              <figure key={p.label} className={`relative flex min-h-40 items-end overflow-hidden rounded-2xl bg-forest bg-cover bg-center p-4 text-cream ${i === 0 ? "col-span-2 min-h-56" : ""}`} style={{ backgroundImage: `url(${p.src})` }}>
-                <figcaption className="rounded-full bg-forest/80 px-3 py-1 text-sm">{p.label}</figcaption>
+              <figure
+                key={p.label}
+                className={`relative flex items-end overflow-hidden rounded-2xl bg-forest p-4 text-cream ${
+                  i === 0 ? "col-span-2 aspect-[16/10]" : "aspect-square"
+                }`}
+              >
+                <Image
+                  src={p.src}
+                  alt={p.alt}
+                  fill
+                  quality={95}
+                  priority={i === 0}
+                  sizes={i === 0 ? "(max-width: 768px) 100vw, 560px" : "(max-width: 768px) 50vw, 275px"}
+                  className="object-cover object-center"
+                />
+                <figcaption className="relative z-10 rounded-full bg-forest/85 px-3 py-1 text-sm backdrop-blur-sm">
+                  {p.label}
+                </figcaption>
               </figure>
             ))}
           </div>
