@@ -153,7 +153,7 @@ const buildCartWhatsAppMessage = (cart: CartItem[], note: string) => {
   const lines = cart.map(formatCartLine).join("\n");
   const cleanNote = note.trim();
   const noteBlock = cleanNote ? `\n\nAclaración: ${cleanNote}` : "";
-  return `Hola Roma Sandwich! Quiero pedir presupuesto por el siguiente pedido:\n\n${lines}${noteBlock}\n\n¿Me pasás el presupuesto total? ¡Gracias!`;
+  return `Hola Roma Sandwich! Quiero pedir presupuesto por el siguiente pedido:\n\n${lines}${noteBlock}\n\n¿Cuánto sería el presupuesto total? Gracias 🥪`;
 };
 
 function Chevron({ open }: { open: boolean }) {
