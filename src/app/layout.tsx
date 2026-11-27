@@ -9,7 +9,7 @@ const title = "Roma Sandwich | Sándwiches de miga, picadas y catering en Córdo
 const description = "Sandwichería y fábrica artesanal en Córdoba. Sándwiches de miga, tradicionales en pan árabe y pebete, línea gourmet en ciabatta y focaccia, combos especiales, picadas, tortas saladas y catering. Montevideo 712. Pedí por WhatsApp.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://romasandwich.com.ar"), // TODO: cambiar por el dominio real
+  metadataBase: new URL("https://www.romasandwich.com.ar"),
   title,
   description,
   keywords: [
