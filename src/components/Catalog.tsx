@@ -16,6 +16,7 @@ import {
   tortas,
   type Plan,
 } from "@/data/romaData";
+import { sanitizePlainText } from "@/lib/security";
 import { wa, money } from "@/lib/whatsapp";
 
 type CartItem = {
@@ -51,6 +52,80 @@ type CartActions = {
 };
 
 const STORAGE_KEY = "roma-sandwich-cart-v1";
+const MAX_CART_ITEMS = 50;
+const MAX_ITEM_QUANTITY = 200;
+const MAX_CART_NOTE_LENGTH = 300;
+const MAX_CART_FIELD_LENGTH = 160;
+const MAX_STORED_CART_BYTES = 20_000;
+const BLOCKED_OBJECT_KEYS = new Set(["__proto__", "constructor", "prototype"]);
+
+const clampCartQuantity = (value: number): number =>
+  Number.isFinite(value) ? Math.min(MAX_ITEM_QUANTITY, Math.max(0, Math.trunc(value))) : 0;
+
+function parseStoredCart(raw: string): { items: CartItem[]; note: string } | null {
+  if (!raw || raw.length > MAX_STORED_CART_BYTES) return null;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    return null;
+  }
+
+  const record = parsed as Record<string, unknown>;
+  const deduped = new Map<string, CartItem>();
+
+  if (Array.isArray(record.items)) {
+    for (const entry of record.items) {
+      if (deduped.size >= MAX_CART_ITEMS) break;
+      if (typeof entry !== "object" || entry === null || Array.isArray(entry)) continue;
+
+      const candidate = entry as Record<string, unknown>;
+      const id = sanitizePlainText(candidate.id, { maxLength: MAX_CART_FIELD_LENGTH }).trim();
+      const section = sanitizePlainText(candidate.section, { maxLength: MAX_CART_FIELD_LENGTH }).trim();
+      const name = sanitizePlainText(candidate.name, { maxLength: MAX_CART_FIELD_LENGTH }).trim();
+      const variant = sanitizePlainText(candidate.variant, { maxLength: MAX_CART_FIELD_LENGTH }).trim();
+      const unitKind = candidate.unitKind;
+      const rawQty = candidate.quantity;
+
+      if (
+        !id ||
+        BLOCKED_OBJECT_KEYS.has(id) ||
+        !section ||
+        !name ||
+        (unitKind !== "combo-miga" && unitKind !== "unit") ||
+        typeof rawQty !== "number" ||
+        !Number.isInteger(rawQty) ||
+        rawQty < 1
+      ) {
+        continue;
+      }
+
+      const quantity = clampCartQuantity(rawQty);
+      if (quantity < 1) continue;
+
+      deduped.set(id, {
+        id,
+        section,
+        name,
+        ...(variant ? { variant } : {}),
+        quantity,
+        unitKind,
+      });
+    }
+  }
+
+  const note = sanitizePlainText(record.note, {
+    maxLength: MAX_CART_NOTE_LENGTH,
+    preserveNewlines: true,
+  });
+
+  return { items: Array.from(deduped.values()), note };
+}
 
 const pill = (active: boolean) =>
   `rounded-full px-3.5 py-1 text-xs font-medium transition sm:text-sm ${
@@ -615,8 +690,16 @@ function CartDrawer({
                 Aclaración opcional
                 <textarea
                   rows={2}
+                  maxLength={MAX_CART_NOTE_LENGTH}
                   value={note}
-                  onChange={(e) => onNoteChange(e.target.value)}
+                  onChange={(e) =>
+                    onNoteChange(
+                      sanitizePlainText(e.target.value, {
+                        maxLength: MAX_CART_NOTE_LENGTH,
+                        preserveNewlines: true,
+                      }),
+                    )
+                  }
                   placeholder="Ej: Para el sábado al mediodía, retiro en el local..."
                   className="mt-1.5 w-full rounded-xl border border-olive/30 bg-cream px-3 py-2 text-sm text-ink placeholder:text-ink-soft/60"
                 />
@@ -660,9 +743,13 @@ export default function Catalog() {
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved) as { items?: CartItem[]; note?: string };
-        if (Array.isArray(parsed.items)) setCartItems(parsed.items);
-        if (typeof parsed.note === "string") setNote(parsed.note);
+        const parsed = parseStoredCart(saved);
+        if (parsed) {
+          setCartItems(parsed.items);
+          setNote(parsed.note);
+        } else {
+          window.localStorage.removeItem(STORAGE_KEY);
+        }
       }
     } catch {
       // Ignoramos errores de almacenamiento local en navegación restringida.
@@ -684,20 +771,25 @@ export default function Catalog() {
     getQuantity: (id) => cartItems.find((item) => item.id === id)?.quantity ?? 0,
     addItem: (newItem, amount = 1) =>
       setCartItems((prev) => {
+        const delta = clampCartQuantity(amount);
+        if (delta <= 0) return prev;
         const existing = prev.find((item) => item.id === newItem.id);
         if (existing) {
+          const nextQty = clampCartQuantity(existing.quantity + delta);
           return prev.map((item) =>
-            item.id === newItem.id ? { ...item, quantity: item.quantity + amount } : item,
+            item.id === newItem.id ? { ...item, quantity: nextQty } : item,
           );
         }
-        return [...prev, { ...newItem, quantity: amount }];
+        if (prev.length >= MAX_CART_ITEMS) return prev;
+        return [...prev, { ...newItem, quantity: delta }];
       }),
     setQuantity: (id, nextQty) =>
-      setCartItems((prev) =>
-        nextQty <= 0
+      setCartItems((prev) => {
+        const bounded = clampCartQuantity(nextQty);
+        return bounded <= 0
           ? prev.filter((item) => item.id !== id)
-          : prev.map((item) => (item.id === id ? { ...item, quantity: nextQty } : item)),
-      ),
+          : prev.map((item) => (item.id === id ? { ...item, quantity: bounded } : item));
+      }),
   };
 
   const totalSelections = cartItems.reduce((sum, item) => sum + item.quantity, 0);

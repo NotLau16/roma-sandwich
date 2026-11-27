@@ -1,7 +1,24 @@
 "use client";
 import { useEffect, useState } from "react";
 import { cateringServices, cateringEvents } from "@/data/romaData";
+import { sanitizePlainText } from "@/lib/security";
 import { wa } from "@/lib/whatsapp";
+
+const MIN_GUESTS = 6;
+const MAX_GUESTS = 10000;
+const MAX_NOTES_LENGTH = 400;
+const DIGITS_ONLY_RE = /^\d+$/;
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+const isValidCalendarIsoDate = (value: string): boolean => {
+  if (!ISO_DATE_RE.test(value)) return false;
+  const [yStr, mStr, dStr] = value.split("-");
+  const y = Number(yStr);
+  const m = Number(mStr);
+  const d = Number(dStr);
+  const check = new Date(y, m - 1, d);
+  return check.getFullYear() === y && check.getMonth() === m - 1 && check.getDate() === d;
+};
 
 const field =
   "mt-1.5 w-full rounded-xl border border-cream/25 bg-cream/10 px-4 py-3 text-sm text-cream placeholder:text-cream/45 transition focus:border-cream/70 focus:bg-cream/15 focus:outline-none";
@@ -37,18 +54,23 @@ export default function Catering() {
   }, []);
 
   const toggleService = (service: string) => {
+    if (!cateringServices.includes(service)) return;
     setSelectedServices((prev) =>
       prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service],
     );
   };
 
   const guestsTrimmed = guests.trim();
-  const parsedGuests = Number(guestsTrimmed);
+  const parsedGuests = DIGITS_ONLY_RE.test(guestsTrimmed) ? Number(guestsTrimmed) : NaN;
   const guestsValid =
-    guestsTrimmed !== "" && Number.isInteger(parsedGuests) && parsedGuests > 5;
+    guestsTrimmed !== "" &&
+    Number.isSafeInteger(parsedGuests) &&
+    parsedGuests >= MIN_GUESTS &&
+    parsedGuests <= MAX_GUESTS;
 
-  const dateValid =
-    date.trim() !== "" && (minDate === "" || date >= minDate);
+  const dateTrimmed = date.trim();
+  const dateFormatValid = isValidCalendarIsoDate(dateTrimmed);
+  const dateValid = dateFormatValid && minDate !== "" && dateTrimmed >= minDate;
 
   const servicesValid = selectedServices.length > 0;
   const canSubmit = guestsValid && dateValid && servicesValid;
@@ -56,26 +78,34 @@ export default function Catering() {
   const guestsError =
     guestsTrimmed === ""
       ? "Ingresá la cantidad aproximada de invitados."
-      : !Number.isInteger(parsedGuests) || parsedGuests <= 5
+      : !Number.isSafeInteger(parsedGuests) || parsedGuests < MIN_GUESTS
         ? "El servicio de catering requiere más de 5 invitados (mínimo 6)."
-        : null;
+        : parsedGuests > MAX_GUESTS
+          ? "Para eventos de más de 10.000 invitados, consultanos directamente por WhatsApp."
+          : null;
 
   const dateError =
-    date.trim() === ""
+    dateTrimmed === ""
       ? "Seleccioná la fecha estimada del evento."
-      : minDate && date < minDate
-        ? `Requiere al menos 3 días de anticipación (desde el ${formatDateEs(minDate)}).`
-        : null;
+      : !dateFormatValid
+        ? "Ingresá una fecha válida."
+        : minDate && dateTrimmed < minDate
+          ? `Requiere al menos 3 días de anticipación (desde el ${formatDateEs(minDate)}).`
+          : null;
 
   const servicesError =
     selectedServices.length === 0 ? "Elegí al menos un servicio para cotizar." : null;
 
-  const cleanNotes = notes.trim();
+  const safeEvent = cateringEvents.includes(event) ? event : cateringEvents[0];
+  const cleanNotes = sanitizePlainText(notes, {
+    maxLength: MAX_NOTES_LENGTH,
+    preserveNewlines: true,
+  }).trim();
   const msg = [
     "Hola Roma Sandwich! Quisiera solicitar una cotización formal de Catering para Eventos.",
-    `• Tipo de evento: ${event}`,
+    `• Tipo de evento: ${safeEvent}`,
     `• Invitados aproximados: ${parsedGuests} personas`,
-    `• Fecha del evento: ${formatDateEs(date)}`,
+    `• Fecha del evento: ${formatDateEs(dateTrimmed)}`,
     `• Servicios de interés: ${selectedServices.join(", ")}`,
     ...(cleanNotes ? [`• Observaciones: ${cleanNotes}`] : []),
   ].join("\n");
@@ -97,8 +127,10 @@ export default function Catering() {
             Tipo de evento
             <select
               className={`${field} [color-scheme:dark]`}
-              value={event}
-              onChange={(e) => setEvent(e.target.value)}
+              value={safeEvent}
+              onChange={(e) => {
+                if (cateringEvents.includes(e.target.value)) setEvent(e.target.value);
+              }}
             >
               {cateringEvents.map((o) => (
                 <option key={o} value={o} className="bg-forest text-cream">
@@ -112,7 +144,8 @@ export default function Catering() {
             Invitados aproximados
             <input
               type="number"
-              min={6}
+              min={MIN_GUESTS}
+              max={MAX_GUESTS}
               step={1}
               inputMode="numeric"
               placeholder="Ej: 25 (más de 5)"
@@ -197,10 +230,18 @@ export default function Catering() {
           Detalles adicionales (opcional)
           <textarea
             rows={2}
+            maxLength={MAX_NOTES_LENGTH}
             placeholder="Horario estimado, modalidad (envío o retiro) o preferencias especiales..."
             className={field}
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={(e) =>
+              setNotes(
+                sanitizePlainText(e.target.value, {
+                  maxLength: MAX_NOTES_LENGTH,
+                  preserveNewlines: true,
+                }),
+              )
+            }
           />
         </label>
 

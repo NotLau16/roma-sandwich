@@ -3,7 +3,12 @@ import Catalog from "@/components/Catalog";
 import Catering from "@/components/Catering";
 import Reveal from "@/components/Reveal";
 import { business, hours, socialChannels, whyUs } from "@/data/romaData";
+import { safeEmbedUrl, safeExternalUrl } from "@/lib/security";
 import { wa } from "@/lib/whatsapp";
+
+const safeMapsLink = safeExternalUrl(business.mapsLink);
+const safeMapsEmbed = safeEmbedUrl(business.mapsEmbed);
+const safeInstagramUrl = safeExternalUrl(business.instagram);
 
 const wrap = "mx-auto w-full max-w-6xl px-5 sm:px-8";
 const cta =
@@ -252,7 +257,7 @@ export default function Home() {
               <p className="mt-4 text-lg">{business.address}</p>
               <a
                 className={`${cta} mt-4`}
-                href={business.mapsLink}
+                href={safeMapsLink}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -271,51 +276,56 @@ export default function Home() {
               <p className="mt-4 text-sm text-ink-soft">{hours.note}</p>
               <p className="mt-2 text-sm text-ink-soft">{hours.delivery}</p>
             </div>
-            <iframe
-              title="Mapa de Roma Sandwich"
-              src={business.mapsEmbed}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="h-80 w-full rounded-2xl border-0 md:h-full md:min-h-96"
-            />
+            {safeMapsEmbed && (
+              <iframe
+                title="Mapa de Roma Sandwich"
+                src={safeMapsEmbed}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="h-80 w-full rounded-2xl border-0 md:h-full md:min-h-96"
+              />
+            )}
           </div>
         </section>
 
         <section id="redes" className="scroll-mt-16 bg-cream py-16">
           <div className={wrap}>
             <div className="space-y-4">
-              {socialChannels.map((channel) => (
-                <a
-                  key={channel.id}
-                  href={channel.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex flex-col justify-between gap-8 rounded-3xl border border-forest/15 bg-cream-card p-8 shadow-sm transition hover:-translate-y-0.5 hover:border-forest/35 hover:shadow-md md:flex-row md:items-center md:p-10"
-                >
-                  <div className="flex items-start gap-5">
-                    <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-forest text-cream shadow-sm transition group-hover:scale-105">
-                      <InstagramIcon />
-                    </span>
-                    <div>
-                      <span className="text-xs font-semibold uppercase tracking-widest text-olive">
-                        {channel.name} oficial
+              {socialChannels.map((channel) => {
+                const safeChannelUrl = safeExternalUrl(channel.url);
+                return (
+                  <a
+                    key={channel.id}
+                    href={safeChannelUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex flex-col justify-between gap-8 rounded-3xl border border-forest/15 bg-cream-card p-8 shadow-sm transition hover:-translate-y-0.5 hover:border-forest/35 hover:shadow-md md:flex-row md:items-center md:p-10"
+                  >
+                    <div className="flex items-start gap-5">
+                      <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-forest text-cream shadow-sm transition group-hover:scale-105">
+                        <InstagramIcon />
                       </span>
-                      <h2 className="mt-1 font-display text-3xl font-semibold text-forest sm:text-4xl">
-                        {channel.handle}
-                      </h2>
-                      <p className="mt-2 max-w-xl text-base leading-relaxed text-ink-soft">
-                        {channel.description}
-                      </p>
+                      <div>
+                        <span className="text-xs font-semibold uppercase tracking-widest text-olive">
+                          {channel.name} oficial
+                        </span>
+                        <h2 className="mt-1 font-display text-3xl font-semibold text-forest sm:text-4xl">
+                          {channel.handle}
+                        </h2>
+                        <p className="mt-2 max-w-xl text-base leading-relaxed text-ink-soft">
+                          {channel.description}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <span className="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-forest px-7 py-3.5 text-sm font-semibold text-cream shadow-sm transition group-hover:bg-forest-deep md:self-center">
-                    <span>Seguir en {channel.name}</span>
-                    <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
-                      →
+                    <span className="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-forest px-7 py-3.5 text-sm font-semibold text-cream shadow-sm transition group-hover:bg-forest-deep md:self-center">
+                      <span>Seguir en {channel.name}</span>
+                      <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
+                        →
+                      </span>
                     </span>
-                  </span>
-                </a>
-              ))}
+                  </a>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -336,7 +346,7 @@ export default function Home() {
             </div>
             <p className="mt-2 text-sm text-cream/80">Montevideo 712, Córdoba</p>
             <div className="mt-3 flex flex-wrap gap-5 text-sm underline underline-offset-4">
-              <a href={business.instagram} target="_blank" rel="noopener noreferrer">
+              <a href={safeInstagramUrl} target="_blank" rel="noopener noreferrer">
                 Instagram {business.handle}
               </a>
               <a href={wa("Hola Roma Sandwich!")} target="_blank" rel="noopener noreferrer">
