@@ -153,18 +153,37 @@ export default function Home() {
 
         <section id="productos" className="scroll-mt-16 bg-cream-card py-16">
           <div className={wrap}>
-            <h2 className="font-display text-3xl font-semibold text-forest sm:text-4xl">
-              Nuestros productos
-            </h2>
-            <p className="mb-8 mt-2 max-w-2xl text-ink-soft">
-              Tocá cada categoría para desplegar las opciones, sumalas a tu carrito y pedí tu presupuesto por WhatsApp.
-            </p>
+            <div className="mb-8 flex items-center justify-between gap-4">
+              <div>
+                <h2 className="font-display text-3xl font-semibold text-forest sm:text-4xl">
+                  Nuestros productos
+                </h2>
+                <p className="mt-2 max-w-2xl text-ink-soft">
+                  Tocá cada categoría para desplegar las opciones, sumalas a tu carrito y pedí tu presupuesto por WhatsApp.
+                </p>
+              </div>
+              <Image
+                src="/img/mascota.png"
+                alt="Mascota de Roma Sandwich saludando"
+                width={96}
+                height={96}
+                className="h-16 w-16 shrink-0 object-contain drop-shadow-sm sm:h-24 sm:w-24"
+              />
+            </div>
             <Catalog />
           </div>
         </section>
 
-        <section id="catering" className="scroll-mt-16 bg-forest py-20 text-cream">
-          <div className={`${wrap} grid items-start gap-12 lg:grid-cols-12`}>
+        <section id="catering" className="relative scroll-mt-16 overflow-hidden bg-forest py-20 text-cream">
+          <Image
+            src="/img/mascota.png"
+            alt=""
+            aria-hidden="true"
+            width={520}
+            height={520}
+            className="pointer-events-none absolute -bottom-16 -left-16 z-0 h-80 w-80 -rotate-6 select-none object-contain opacity-[0.07] lg:h-[28rem] lg:w-[28rem]"
+          />
+          <div className={`${wrap} relative z-10 grid items-start gap-12 lg:grid-cols-12`}>
             <div className="lg:col-span-5">
               <span className="inline-flex items-center rounded-full border border-cream/25 bg-cream/10 px-3.5 py-1 text-xs font-medium uppercase tracking-widest text-cream/90">
                 Servicio exclusivo · Eventos y empresas
@@ -196,16 +215,29 @@ export default function Home() {
         </section>
 
         <section className={`${wrap} py-16`}>
-          <h2 className="font-display text-3xl font-semibold text-forest sm:text-4xl">
-            ¿Por qué elegir Roma Sandwich?
-          </h2>
-          <div className="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2">
-            {whyUs.map((w) => (
-              <Reveal key={w.title} className="border-l-2 border-olive-light pl-5">
-                <h3 className="font-display text-xl text-forest">{w.title}</h3>
-                <p className="mt-1 text-ink-soft">{w.text}</p>
-              </Reveal>
-            ))}
+          <div className="grid items-center gap-10 lg:grid-cols-12">
+            <div className="lg:col-span-8">
+              <h2 className="font-display text-3xl font-semibold text-forest sm:text-4xl">
+                ¿Por qué elegir Roma Sandwich?
+              </h2>
+              <div className="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2">
+                {whyUs.map((w) => (
+                  <Reveal key={w.title} className="border-l-2 border-olive-light pl-5">
+                    <h3 className="font-display text-xl text-forest">{w.title}</h3>
+                    <p className="mt-1 text-ink-soft">{w.text}</p>
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+            <Reveal className="flex justify-center lg:col-span-4">
+              <Image
+                src="/img/mascota.png"
+                alt="Mascota oficial de Roma Sandwich"
+                width={260}
+                height={260}
+                className="h-48 w-48 object-contain drop-shadow-md sm:h-60 sm:w-60"
+              />
+            </Reveal>
           </div>
         </section>
 
