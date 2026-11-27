@@ -163,11 +163,12 @@ export default function Home() {
                 </p>
               </div>
               <Image
-                src="/img/mascota.png"
-                alt="Mascota de Roma Sandwich saludando"
-                width={96}
-                height={96}
-                className="h-16 w-16 shrink-0 object-contain drop-shadow-sm sm:h-24 sm:w-24"
+                src="/img/mascota-productos.png"
+                alt="Mascota de Roma Sandwich guiñando y señalando el menú"
+                width={254}
+                height={281}
+                unoptimized
+                className="h-20 w-auto shrink-0 object-contain drop-shadow-sm sm:h-28"
               />
             </div>
             <Catalog />
