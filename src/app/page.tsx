@@ -165,9 +165,9 @@ export default function Home() {
               <Image
                 src="/img/mascota-productos.png"
                 alt="Mascota de Roma Sandwich guiñando y señalando el menú"
-                width={254}
-                height={281}
-                unoptimized
+                width={798}
+                height={894}
+                quality={95}
                 className="h-20 w-auto shrink-0 object-contain drop-shadow-sm sm:h-28"
               />
             </div>
@@ -234,9 +234,9 @@ export default function Home() {
               <Image
                 src="/img/mascota-pensando.png"
                 alt="Mascota de Roma Sandwich pensativa"
-                width={209}
-                height={280}
-                unoptimized
+                width={734}
+                height={977}
+                quality={95}
                 className="h-52 w-auto object-contain drop-shadow-md sm:h-64"
               />
             </Reveal>
