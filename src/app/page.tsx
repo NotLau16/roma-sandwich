@@ -231,11 +231,12 @@ export default function Home() {
             </div>
             <Reveal className="flex justify-center lg:col-span-4">
               <Image
-                src="/img/mascota.png"
-                alt="Mascota oficial de Roma Sandwich"
-                width={260}
-                height={260}
-                className="h-48 w-48 object-contain drop-shadow-md sm:h-60 sm:w-60"
+                src="/img/mascota-pensando.png"
+                alt="Mascota de Roma Sandwich pensativa"
+                width={209}
+                height={280}
+                unoptimized
+                className="h-52 w-auto object-contain drop-shadow-md sm:h-64"
               />
             </Reveal>
           </div>
